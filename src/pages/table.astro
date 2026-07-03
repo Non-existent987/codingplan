@@ -83,7 +83,7 @@ function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥
           {ranked.map((p, i) => (
             <tr class={i >= scored.length ? 'extra' : ''} style={i >= scored.length ? 'display:none' : ''}>
               <td class="num">{i + 1}</td>
-              <td><b>{p.platform}</b> · {p.plan}</td>
+              <td><b><a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'sponsored' : 'nofollow'} style="border:none;color:var(--ink)">{p.platform}</a></b> · <a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'sponsored' : 'nofollow'} style="border:none;color:var(--ink-soft)">{p.plan}</a></td>
               <td>{p.type === 'coding' ? 'Coding' : 'Token'}</td>
               <td class="num">{fmtPrice(p)}</td>
               <td class="num">{p.capability_score}</td>
@@ -94,8 +94,8 @@ function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥
               </td>
               <td>
                 {p.affiliate_url
-                  ? <a href={p.affiliate_url} target="_blank" rel="sponsored" style="font-size:.82rem;border:none">链接 →</a>
-                  : ''
+                  ? <a href={p.affiliate_url} target="_blank" rel="sponsored" style="font-size:.78rem;border:1px solid var(--accent);color:var(--accent);padding:.1rem .4rem">返利</a>
+                  : <span style="color:var(--ink-faint);font-size:.78rem">官方</span>
                 }
               </td>
             </tr>

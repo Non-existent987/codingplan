@@ -266,7 +266,7 @@ plans:
     quota_score: null
     purchase_difficulty: easy
     official_url: https://platform.minimaxi.com/subscribe/token-plan
-    affiliate_url: https://platform.minimaxi.com/subscribe/token-plan?
+    affiliate_url: null
     note: 多模态+海量额度，4百多值但超预算太多。
     verdict: 谨慎
     featured: false
@@ -346,6 +346,449 @@ plans:
     official_url: https://www.mthreads.com/
     affiliate_url: null
     note: 白嫖福利。但限量、模型比T0差一档，只能应急。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  # ═══════ 新增 2026-07-03 ═══════
+  - id: aliyun-bailian-lite
+    platform: 阿里·百炼
+    plan: Coding Plan Lite
+    price_monthly: 40
+    currency: cny
+    region: cn
+    type: coding
+    model_flagship: Qwen-3.7-Plus
+    models: [Qwen-3.7-Plus, Qwen-3.6-Plus, Qwen-3.5-Plus, MiniMax-M2.5, GLM-5]
+    multimodal: false
+    refill_5h: 1200
+    refill_week: 9000
+    refill_month: 18000
+    measured_monthly_tokens_M: 500
+    yuan_per_M_token: 0.08
+    capability_tier: T1
+    capability_score: 7.0
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://www.aliyun.com/benefit/scene/codingplan
+    affiliate_url: null
+    note: 百炼入门包，Qwen-3.7-Plus够用但非T0，¥40门槛低。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  - id: aliyun-bailian-token-standard
+    platform: 阿里·百炼
+    plan: Token Plan 标准
+    price_monthly: 198
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: Qwen-3.7-Plus
+    models: [Qwen-3.7-Plus, Qwen-3.6-Plus, Qwen-3.5-Plus, MiniMax-M2.5, GLM-5, Kimi-K2.5]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 3000
+    yuan_per_M_token: 0.07
+    capability_tier: T1
+    capability_score: 7.0
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://www.aliyun.com/product/bailian
+    affiliate_url: null
+    note: 标准Token包，量大但旗舰非T0，超¥150预算。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: aliyun-bailian-token-advanced
+    platform: 阿里·百炼
+    plan: Token Plan 高级
+    price_monthly: 698
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: Qwen-3.7-Plus
+    models: [Qwen-3.7-Plus, Qwen-3.6-Plus, Qwen-3.5-Plus, MiniMax-M2.5, GLM-5, Kimi-K2.5]
+    multimodal: true
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 12000
+    yuan_per_M_token: 0.06
+    capability_tier: T1
+    capability_score: 7.0
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://www.aliyun.com/product/bailian
+    affiliate_url: null
+    note: 高级Token包，额度巨大但价格远超预算，企业用户考虑。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: volcengine-token-small
+    platform: 字节·方舟
+    plan: Token Plan Small
+    price_monthly: 40
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: Doubao-Seed-2.0-Pro
+    models: [Doubao-Seed-2.0-Pro, Doubao-Seed-2.0, DeepSeek-V4-Flash, Qwen-3.7-Plus]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 400
+    yuan_per_M_token: 0.10
+    capability_tier: T1
+    capability_score: 7.2
+    quota_score: null
+    purchase_difficulty: easy
+    official_url: https://www.volcengine.com/product/ark
+    affiliate_url: null
+    note: 方舟Token入门，首月¥9.9，Doubao-2.0-Pro尚可但非T0。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  - id: volcengine-token-medium
+    platform: 字节·方舟
+    plan: Token Plan Medium
+    price_monthly: 200
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: Doubao-Seed-2.0-Pro
+    models: [Doubao-Seed-2.0-Pro, Doubao-Seed-2.0, DeepSeek-V4-Flash, Qwen-3.7-Plus, MiniMax-M3]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 2000
+    yuan_per_M_token: 0.10
+    capability_tier: T1
+    capability_score: 7.2
+    quota_score: null
+    purchase_difficulty: easy
+    official_url: https://www.volcengine.com/product/ark
+    affiliate_url: null
+    note: 中档Token包，超预算但模型池比Coding Plan窄。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: minimax-plus
+    platform: MiniMax
+    plan: 新 Plus
+    price_monthly: 49
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: MiniMax-M3
+    models: [MiniMax-M3, MiniMax-M2.7, MiniMax-M2.5]
+    multimodal: true
+    refill_5h: 1500
+    refill_week: 15000
+    refill_month: 60000
+    measured_monthly_tokens_M: 710
+    yuan_per_M_token: 0.07
+    capability_tier: T1
+    capability_score: 7.0
+    quota_score: null
+    purchase_difficulty: easy
+    official_url: https://platform.minimaxi.com/subscribe/token-plan
+    affiliate_url: null
+    note: MiniMax入门，多模态+M3，¥49性价比不错但非T0。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  - id: minimax-max
+    platform: MiniMax
+    plan: 新 Max
+    price_monthly: 119
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: MiniMax-M3
+    models: [MiniMax-M3, MiniMax-M2.7, MiniMax-M2.5]
+    multimodal: true
+    refill_5h: 5000
+    refill_week: 50000
+    refill_month: 200000
+    measured_monthly_tokens_M: 2367
+    yuan_per_M_token: 0.05
+    capability_tier: T1
+    capability_score: 7.0
+    quota_score: null
+    purchase_difficulty: easy
+    official_url: https://platform.minimaxi.com/subscribe/token-plan
+    affiliate_url: null
+    note: Max额度是Plus三倍多，¥119在预算内，多模态加分。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  - id: baidu-qianfan-lite
+    platform: 百度·千帆
+    plan: Lite
+    price_monthly: 40
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: ERNIE-4.5
+    models: [ERNIE-4.5, ERNIE-4.0, DeepSeek-V4-Flash]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 300
+    yuan_per_M_token: 0.13
+    capability_tier: T2
+    capability_score: 6.0
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://qianfan.baidubce.com/
+    affiliate_url: null
+    note: 千帆入门，ERNIE-4.5代码能力偏弱，¥40不如方舟Lite。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: baidu-qianfan-pro
+    platform: 百度·千帆
+    plan: Pro
+    price_monthly: 200
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: ERNIE-4.5
+    models: [ERNIE-4.5, ERNIE-4.0, DeepSeek-V4-Flash, Qwen-3.7-Plus]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 1500
+    yuan_per_M_token: 0.13
+    capability_tier: T2
+    capability_score: 6.0
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://qianfan.baidubce.com/
+    affiliate_url: null
+    note: 千帆Pro，超预算且旗舰偏弱，不推荐个人开发者。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: jdcloud-lite
+    platform: 京东云
+    plan: Lite
+    price_monthly: 40
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: DeepSeek-V4-Flash
+    models: [DeepSeek-V4-Flash, Qwen-3.7-Plus, GLM-5]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 300
+    yuan_per_M_token: 0.13
+    capability_tier: T1
+    capability_score: 7.2
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://www.jdcloud.com/cn/products/nlp-model
+    affiliate_url: null
+    note: 京东云入门，转售DeepSeek/Qwen，¥40还行但不如直连。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  - id: jdcloud-pro
+    platform: 京东云
+    plan: Pro
+    price_monthly: 200
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: DeepSeek-V4-Flash
+    models: [DeepSeek-V4-Flash, Qwen-3.7-Plus, GLM-5, MiniMax-M2.5]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 1500
+    yuan_per_M_token: 0.13
+    capability_tier: T1
+    capability_score: 7.2
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://www.jdcloud.com/cn/products/nlp-model
+    affiliate_url: null
+    note: 京东云Pro，超预算且转售无优势，不如方舟Coding Plan。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: tencentcloud-lite
+    platform: 腾讯云
+    plan: Lite Token Plan
+    price_monthly: 39
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: DeepSeek-V4-Flash
+    models: [DeepSeek-V4-Flash, Qwen-3.7-Plus, Hunyuan-T1]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 300
+    yuan_per_M_token: 0.13
+    capability_tier: T1
+    capability_score: 7.2
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://cloud.tencent.com/product/lke
+    affiliate_url: null
+    note: 腾讯云入门，¥39最低档，转售模型无独特优势。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  - id: tencentcloud-standard
+    platform: 腾讯云
+    plan: Standard Token Plan
+    price_monthly: 99
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: DeepSeek-V4-Flash
+    models: [DeepSeek-V4-Flash, Qwen-3.7-Plus, Hunyuan-T1, GLM-5]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 800
+    yuan_per_M_token: 0.12
+    capability_tier: T1
+    capability_score: 7.2
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://cloud.tencent.com/product/lke
+    affiliate_url: null
+    note: 腾讯云标准，¥99在预算内，额度适中但模型池一般。
+    verdict: 平替
+    featured: false
+    updated: 2026-07-03
+
+  - id: tencentcloud-pro
+    platform: 腾讯云
+    plan: Pro Token Plan
+    price_monthly: 299
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: DeepSeek-V4-Flash
+    models: [DeepSeek-V4-Flash, Qwen-3.7-Plus, Hunyuan-T1, GLM-5, MiniMax-M2.5]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 2500
+    yuan_per_M_token: 0.12
+    capability_tier: T1
+    capability_score: 7.2
+    quota_score: null
+    purchase_difficulty: normal
+    official_url: https://cloud.tencent.com/product/lke
+    affiliate_url: null
+    note: 腾讯云Pro，远超预算，转售无独特优势不推荐。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: huawei-lite
+    platform: 华为云
+    plan: Lite Token Plan
+    price_monthly: 59
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: Pangu-5.0
+    models: [Pangu-5.0, DeepSeek-V4-Flash, Qwen-3.7-Plus]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 200
+    yuan_per_M_token: 0.30
+    capability_tier: T2
+    capability_score: 5.5
+    quota_score: null
+    purchase_difficulty: hard
+    official_url: https://www.huaweicloud.com/product/modelarts.html
+    affiliate_url: null
+    note: 华为云入门，盘古代码能力弱，¥59偏贵且开通繁琐。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: huawei-standard
+    platform: 华为云
+    plan: Standard Token Plan
+    price_monthly: 149
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: Pangu-5.0
+    models: [Pangu-5.0, DeepSeek-V4-Flash, Qwen-3.7-Plus, GLM-5]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 600
+    yuan_per_M_token: 0.25
+    capability_tier: T2
+    capability_score: 5.5
+    quota_score: null
+    purchase_difficulty: hard
+    official_url: https://www.huaweicloud.com/product/modelarts.html
+    affiliate_url: null
+    note: 华为云标准，卡在¥150边缘但盘古偏弱，不如选方舟。
+    verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: xiaomi-mimo-lite
+    platform: 小米·MiMo
+    plan: Lite
+    price_monthly: 39
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: MiMo-V2.5-Pro
+    models: [MiMo-V2.5-Pro, MiMo-V2.5, DeepSeek-V4-Flash]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 250
+    yuan_per_M_token: 0.16
+    capability_tier: T1
+    capability_score: 7.0
+    quota_score: null
+    purchase_difficulty: easy
+    official_url: https://mimo.xiaomi.com/
+    affiliate_url: null
+    note: 小米MiMo入门，¥39最低价之一，MiMo-V2.5-Pro代码能力尚可。
     verdict: 平替
     featured: false
     updated: 2026-07-03

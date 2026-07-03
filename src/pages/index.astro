@@ -88,7 +88,7 @@ function firstPrice(note) {
         <article class="card">
           <div class="rank num">No. {String(i + 1).padStart(2, '0')}</div>
           <div class="platform">{p.platform}</div>
-          <div class="plan">{p.plan}</div>
+          <div class="plan"><a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'noopener sponsored' : 'noopener nofollow'}>{p.plan}</a></div>
           <div class="specs">
             <span class="k">旗舰模型</span><span class="v">{p.model_flagship}</span>
             <span class="k">月费</span><span class="v">{fmtPrice(p)}</span>
