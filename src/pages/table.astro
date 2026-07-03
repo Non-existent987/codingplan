@@ -1,0 +1,126 @@
+---
+import Base from '../layouts/Base.astro';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { parse } from 'yaml';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..', '..');
+const doc = parse(readFileSync(join(root, 'data', 'plans.yaml'), 'utf8'));
+
+const prices = doc.plans.map(p => p.yuan_per_M_token);
+const minP = Math.min(...prices);
+const maxP = Math.max(...prices);
+const span = Math.max(1e-9, maxP - minP);
+
+const ranked = doc.plans
+  .map(p => ({
+    ...p,
+    total_score: Number((p.capability_score + (span < 1e-6 ? 10 : (maxP - p.yuan_per_M_token) / span * 10)).toFixed(2))
+  }))
+  .sort((a, b) => b.total_score - a.total_score);
+
+const FEATURED_LIMIT = 6;
+function fmtTokens(m) { if (!m) return '—'; return m >= 1000 ? `${(m / 1000).toFixed(2)}B` : `${m}M`; }
+function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥${p.price_monthly}`; }
+function diff(d) { return d === 'easy' ? '无需' : d === 'normal' ? '一般' : '需抢'; }
+---
+
+<Base path="/table" title="全部套餐 · Coding Plan Guide" description="全部收录的 AI 编程订阅套餐一览，可按月费、评分、性价比排序。">
+  <section class="wrap" style="padding-top:3rem">
+    <p class="eyebrow"><span class="bar"></span>全部收录</p>
+    <h2>{ranked.length} 款可买的编程订阅。</h2>
+    <p style="color:var(--ink-soft);max-width:54ch">首 6 款为精选 Top（首页同款），其余按综合得分降序附下。点列头排序。</p>
+
+    <p style="margin:1.6rem 0 0">
+      <button id="toggle-less" type="button"
+        style="border:1px solid var(--rule);background:transparent;padding:.55rem 1rem;font-family:var(--sans);font-size:.88rem;cursor:pointer;color:var(--ink)">
+        显示全部 {ranked.length} 款 <span style="color:var(--accent)">↓</span>
+      </button>
+    </p>
+
+    <div style="margin-top:2rem; overflow-x:auto">
+      <table class="thin-table" id="plan-table">
+        <thead>
+          <tr>
+            <th data-key="rank">#</th>
+            <th data-key="platform">平台 · 套餐</th>
+            <th data-key="type">类型</th>
+            <th data-key="price_monthly" data-num>月费</th>
+            <th data-key="model_flagship">旗舰模型</th>
+            <th data-key="measured" data-num>月 Token</th>
+            <th data-key="yuan_per_M_token" data-num>¥/M Token</th>
+            <th data-key="total_score" data-num>评分</th>
+            <th data-key="verdict">结论</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ranked.map((p, i) => (
+            <tr class={i >= FEATURED_LIMIT ? 'extra' : ''} style={i >= FEATURED_LIMIT ? 'display:none' : ''}>
+              <td class="num">{i + 1}</td>
+              <td><b>{p.platform}</b> · {p.plan}</td>
+              <td>{p.type === 'coding' ? 'Coding' : 'Token'}</td>
+              <td class="num">{fmtPrice(p)}</td>
+              <td>{p.model_flagship}</td>
+              <td class="num">{fmtTokens(p.measured_monthly_tokens_M)}</td>
+              <td class="num">¥{p.yuan_per_M_token}</td>
+              <td class="num"><b style="color:var(--accent)">{p.total_score}</b></td>
+              <td><span class="verdict-dot {p.verdict}"></span>{p.verdict}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p style="color:var(--ink-faint);font-size:.82rem;margin-top:1.4rem">
+      空缺字段表示官方未公开。
+      评分公式见 <a href="/method">方法说明</a>。不为任何平台返利。
+    </p>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ FEATURED_LIMIT }}>
+  const btn = document.getElementById('toggle-less');
+  const extras = document.querySelectorAll('tr.extra');
+  let expanded = false;
+  btn.addEventListener('click', () => {
+    expanded = !expanded;
+    extras.forEach(r => r.style.display = expanded ? '' : 'none');
+    btn.innerHTML = expanded
+      ? '只显示精选 Top ' + FEATURED_LIMIT + ' <span style="color:var(--accent)">↑</span>'
+      : '显示全部 <span style="color:var(--accent)">↓</span>';
+  });
+
+  const table = document.getElementById('plan-table');
+  const tbody = table.querySelector('tbody');
+  let sortKey = 'rank', sortDir = 1;
+  const numKeys = new Set(['price_monthly', 'yuan_per_M_token', 'total_score', 'measured']);
+
+  table.querySelectorAll('th').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.key;
+      if (sortKey === key) sortDir = -sortDir; else { sortKey = key; sortDir = 1; }
+      table.querySelectorAll('th').forEach(h => h.classList.remove('sorted'));
+      th.classList.add('sorted');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        let av, bv;
+        if (key === 'rank') { av = +a.cells[0].textContent; bv = +b.cells[0].textContent; return (av - bv) * sortDir; }
+        if (key === 'platform') { av = a.cells[1].textContent; bv = b.cells[1].textContent; return av.localeCompare(bv, 'zh') * sortDir; }
+        if (key === 'model_flagship') { av = a.cells[4].textContent; bv = b.cells[4].textContent; return av.localeCompare(bv, 'zh') * sortDir; }
+        if (key === 'type') { av = a.cells[2].textContent; bv = b.cells[2].textContent; return av.localeCompare(bv) * sortDir; }
+        if (key === 'verdict') { av = a.cells[7].textContent.trim(); bv = b.cells[7].textContent.trim(); return av.localeCompare(bv, 'zh') * sortDir; }
+        if (key === 'price_monthly') { av = parseFloat(a.cells[3].textContent.replace(/[^\d.]/g,'')); bv = parseFloat(b.cells[3].textContent.replace(/[^\d.]/g,'')); }
+        else if (key === 'yuan_per_M_token') { av = parseFloat(a.cells[6].textContent.replace(/[^\d.]/g,'')); bv = parseFloat(b.cells[6].textContent.replace(/[^\d.]/g,'')); }
+        else if (key === 'total_score') { av = parseFloat(a.cells[7].textContent); bv = parseFloat(b.cells[7].textContent); }
+        else if (key === 'measured') {
+          const p = s => { if (!s || s === '—') return 0; const m = s.match(/([\d.]+)([MB])/); return m ? parseFloat(m[1]) * (m[2]==='B'?1000:1) : 0; };
+          av = p(a.cells[5].textContent); bv = p(b.cells[5].textContent);
+        }
+        return ((isNaN(av)?-1:1) ? (av - bv) : 0) * sortDir;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+</script>

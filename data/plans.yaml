@@ -1,0 +1,176 @@
+# Coding Plan Guide — 唯一数据源
+# 字段规范（scripts/validate.mjs 强制校验）:
+#   id            : 唯一标识, 用于 URL 锚点 (小写连字符)
+#   platform      : 平台名（中文显示名）
+#   plan          : 套餐名
+#   price_monthly : 月费数字
+#   currency      : cny | usd
+#   region        : cn | global（国内能否买到/使用为准）
+#   type          : coding | token
+#   model_flagship: 旗舰模型名
+#   models        : 支持模型列表
+#   multimodal    : true | false
+#   refill_5h     : 5h 请求数（可空）
+#   refill_week   : 周请求数（可空）
+#   refill_month  : 月请求数（可空）
+#   measured_monthly_tokens_M : 实测月可用 Token（百万，可空）
+#   yuan_per_M_token : 每百万 Token 等价人民币（核心指标；usd 按汇率 ~7.2 折算）
+#   capability_tier  : T0 | T1 | T2（据 AA Agentic Index 粗档）
+#   capability_score : 0–10（据 AA Agentic Index 归一化，见 /method）
+#   purchase_difficulty : easy | normal | hard
+#   official_url  : 官方购买页（非联盟链接）
+#   note          : 一句中肯点评（≤60 字）
+#   verdict       : 推荐 | 平替 | 谨慎
+#   featured      : true | false（首屏精选；V1 默认全部 true，featured 由打分自动生成）
+#   updated       : YYYY-MM-DD
+
+meta:
+  version: 1
+  updated: 2026-07-03
+  currency_note: "USD 按 1 USD ≈ 7.2 CNY 折算"
+  capability_source: "Artificial Analysis Agentic Index 2026-06 公开榜单的归一化近似"
+
+plans:
+  - id: volcengine-pro
+    platform: 字节·方舟
+    plan: Coding Plan Pro
+    price_monthly: 200
+    currency: cny
+    region: cn
+    type: coding
+    model_flagship: GLM-5.2
+    models: [GLM-5.2, GLM-5.1, DeepSeek-V4-Pro, DeepSeek-V4-Flash, MiniMax-M3, Kimi-K2.6, Kimi-K2.7-Code, Doubao-Seed-2.0]
+    multimodal: false
+    refill_5h: 6000
+    refill_week: 45000
+    refill_month: 90000
+    measured_monthly_tokens_M: 1249
+    yuan_per_M_token: 0.16
+    capability_tier: T0
+    capability_score: 8.5
+    purchase_difficulty: easy
+    official_url: https://www.volcengine.com/activity/codingplan
+    note: 唯一同时支持四家顶级模型的全家桶平台，叠加折扣期性价比拉满。
+    verdict: 推荐
+    featured: true
+    updated: 2026-07-03
+
+  - id: glm-pro
+    platform: 智谱 AI
+    plan: Coding Plan Pro
+    price_monthly: 149
+    currency: cny
+    region: cn
+    type: coding
+    model_flagship: GLM-5.2
+    models: [GLM-5.2, GLM-5.1, GLM-5-Turbo, GLM-5]
+    multimodal: false
+    refill_5h: 6000
+    refill_week: 30000
+    refill_month: 120000
+    measured_monthly_tokens_M: 600
+    yuan_per_M_token: 0.25
+    capability_tier: T0
+    capability_score: 8.5
+    purchase_difficulty: hard
+    official_url: https://bigmodel.cn/glm-coding
+    note: 直连官方的 T0 万能模型，代码能力国内最强，但需抢购且 429 频繁。
+    verdict: 推荐
+    featured: true
+    updated: 2026-07-03
+
+  - id: xunfei-efficient
+    platform: 讯飞·星火
+    plan: 高效版
+    price_monthly: 199
+    currency: cny
+    region: cn
+    type: coding
+    model_flagship: GLM-5.2
+    models: [GLM-5.2, GLM-5.1, DeepSeek-V4-Pro, DeepSeek-V4-Flash, Kimi-K2.6, Qwen3.6-35B-A3B, MiniMax-M2.5, GLM-5]
+    multimodal: false
+    refill_5h: 6000
+    refill_week: 45000
+    refill_month: 90000
+    measured_monthly_tokens_M: 400
+    yuan_per_M_token: 0.50
+    capability_tier: T0
+    capability_score: 8.5
+    purchase_difficulty: easy
+    official_url: https://www.xfyun.cn/
+    note: 智谱抢不到的最佳平替，无需蹲点，模型覆盖面最宽。
+    verdict: 平替
+    featured: true
+    updated: 2026-07-03
+
+  - id: aliyun-bailian-pro
+    platform: 阿里·百炼
+    plan: Coding Plan Pro
+    price_monthly: 200
+    currency: cny
+    region: cn
+    type: coding
+    model_flagship: Qwen-3.7-Plus
+    models: [Qwen-3.7-Plus, Qwen-3.6-Plus, Qwen-3.5-Plus, MiniMax-M2.5, GLM-5, Kimi-K2.5]
+    multimodal: false
+    refill_5h: 6000
+    refill_week: 45000
+    refill_month: 90000
+    measured_monthly_tokens_M: 3000
+    yuan_per_M_token: 0.07
+    capability_tier: T1
+    capability_score: 7.0
+    purchase_difficulty: normal
+    official_url: https://www.aliyun.com/benefit/scene/codingplan
+    note: 模型池够用，性价比数据峰值，但旗舰能力略逊 T0。
+    verdict: 推荐
+    featured: true
+    updated: 2026-07-03
+
+  - id: minimax-ultra
+    platform: MiniMax
+    plan: 新 Ultra
+    price_monthly: 469
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: MiniMax-M3
+    models: [MiniMax-M3, MiniMax-M2.7, MiniMax-M2.5]
+    multimodal: true
+    refill_5h: 15000
+    refill_week: 150000
+    refill_month: 600000
+    measured_monthly_tokens_M: 7100
+    yuan_per_M_token: 0.07
+    capability_tier: T1
+    capability_score: 7.0
+    purchase_difficulty: easy
+    official_url: https://platform.minimaxi.com/subscribe/token-plan
+    note: 月度 Token 上限最高，独享多模态，养龙虾与重度任务基地。
+    verdict: 推荐
+    featured: true
+    updated: 2026-07-03
+
+  - id: deepseek-flash-200
+    platform: DeepSeek
+    plan: 虚拟套餐 200（按量付费 Baseline）
+    price_monthly: 200
+    currency: cny
+    region: cn
+    type: token
+    model_flagship: DeepSeek-V4-Flash
+    models: [DeepSeek-V4-Flash]
+    multimodal: false
+    refill_5h: null
+    refill_week: null
+    refill_month: null
+    measured_monthly_tokens_M: 1462
+    yuan_per_M_token: 0.14
+    capability_tier: T1
+    capability_score: 7.2
+    purchase_difficulty: easy
+    official_url: https://api-docs.deepseek.com/zh-cn/quick_start/pricing
+    note: 按量付费唯一推荐基准，速度稳、缓存命中即成本再降，无额度焦虑。
+    verdict: 推荐
+    featured: true
+    updated: 2026-07-03

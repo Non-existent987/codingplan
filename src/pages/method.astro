@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { parse } from 'yaml';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..', '..');
+const doc = parse(readFileSync(join(root, 'data', 'plans.yaml'), 'utf8'));
+const n = doc.plans.length;
+const minP = Math.min(...doc.plans.map(p => p.yuan_per_M_token));
+const maxP = Math.max(...doc.plans.map(p => p.yuan_per_M_token));
+const meta = doc.meta;
+---
+
+<Base path="/method" title="评分方法 · Coding Plan Guide" description="Coding Plan Guide 的打分方法、数据来源与中立声明。">
+  <section class="reading" style="padding-top:3rem">
+    <p class="eyebrow"><span class="bar"></span>方法</p>
+    <h2>为什么是这几个？</h2>
+    <p class="pull">不靠直觉，让公式替我说话。任何套餐只要你信这个公式，排名就一致；不信，欢迎指出。</p>
+
+    <h3 style="margin-top:2.5rem">一、综合得分</h3>
+    <div class="formula">综合得分（满分 20）= 能力分（0–10）+ 性价比分（0–10）</div>
+    <p>能力分与性价比分各占一半 — 既不迷信顶级模型，也不被"每元 Token 最多"绑架。</p>
+
+    <h3 style="margin-top:2.5rem">二、能力分（0–10）</h3>
+    <p>取 Artificial Analysis 公布的 <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">Agentic Index</a> 榜单（{meta.capability_source.replace('Artificial Analysis Agentic Index 2026-06 公开榜单的归一化近似', '2026 年 6 月版')}），对套餐所搭载的旗舰模型按 Coding / Agentic 表现归一化到 0–10。</p>
+    <p>对多模型套餐取其旗舰（如字节方舟取 GLM-5.2，DeepSeek 按量取 DS V4 Flash）。</p>
+
+    <h3 style="margin-top:2.5rem">三、性价比分（0–10）</h3>
+    <p>以"每百万 Token 等价人民币"作为单一可比口径：</p>
+    <div class="formula">¥/M Token ≈ 月费 ÷ 实测月可用 Token 数（百万）</div>
+    <p>USD 按 1 USD ≈ {meta.currency_note.match(/[\d.]+ USD ≈ ([\d.]+) CNY/)?.[1] || '7.2'} CNY 折算。当前集合最低 ¥{minP}、最高 ¥{maxP}，在集合内 min-max 归一化后取倒序（越便宜分越高）。</p>
+    <p>"实测"以套餐 5h/周/月官方额度上限按普通使用强度折算 — 我们不假设养龙虾或极限刷量。</p>
+
+    <h3 style="margin-top:2.5rem">四、Top 精选与全部</h3>
+    <p>首页精选 = 综合得分 Top {Math.min(6, n)} 首屏展示；"全部收录"放底表，按得分降序附列。数据逐周自行收集补充，更长远的"新厂家自动收录"见 V2 路线。</p>
+
+    <h3 style="margin-top:2.5rem">五、中立声明</h3>
+    <p>本项目<b>不含任何联盟（返利）链接</b>。所有 <code>official_url</code> 均为官方购买页直链。如怀疑有偏向，请对比同一套餐官方公布与我们展示的字段是否一致。</p>
+
+    <h3 style="margin-top:2.5rem">六、局限与诚实</h3>
+    <ul style="color:var(--ink-soft);font-size:.92rem">
+      <li>实测 Token 数受使用强度与缓存命中率影响，仅供横向比较参考。</li>
+      <li>"抢购难度""429 频率"等定性维度尚未纳入公式，未来若列入会单独说明。</li>
+      <li>能力评级为 AA 榜单的近似映射，官方榜单更精确。</li>
+      <li>价格与权益以各平台官方为最终准。</li>
+    </ul>
+
+    <p style="margin-top:3rem;color:var(--ink-faint);font-size:.85rem">数据更新:{meta.updated} · 数据源仓库 <a href="https://github.com/Non-existent987/codingplan">github.com/Non-existent987/codingplan</a></p>
+  </section>
+</Base>

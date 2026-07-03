@@ -1,0 +1,38 @@
+---
+import '../styles/global.css';
+const { title = 'AI 编程订阅精选导购', description = '2026 年最该买的 AI 编程订阅。给一个答案，不是列一堆。透明打分、精选 Top、可查全量。', path = '/' } = Astro.props;
+const site = 'https://codingplanguide.com';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={`${site}${path}`} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..600&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" />
+  <style is:inline>:root{color-scheme:light}</style>
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="brand" href="/">Coding Plan<span class="dot">·</span>Guide</a>
+    <div class="links">
+      <a href="/" class={path === '/' ? 'active' : ''}>精选</a>
+      <a href="/table" class={path === '/table' ? 'active' : ''}>全部</a>
+      <a href="/method" class={path === '/method' ? 'active' : ''}>方法</a>
+    </div>
+  </nav>
+
+  <slot />
+
+  <footer class="site-foot">
+    <div>{new Date().getFullYear()} Coding Plan Guide · CC BY-SA 4.0</div>
+    <div>不为任何平台返利 · 数据以官方公布为准</div>
+    <div class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">备案中</a></div>
+  </footer>
+</body>
+</html>
