@@ -21,8 +21,6 @@
 | 4 | [OpenCode · Go（首月 $5）](https://opencode.ai/go?ref=F3C3Y1MVK0) | $10 | GLM-5.2 | — | 6.13 | 推荐 |
 | 5 | [智谱 AI · Coding Plan Pro](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥149 | GLM-5.2 | 600M | 4.97 | 平替 |
 
-> 全部套餐（含未过线 24 款）见 [codingplanguide.com/table](https://codingplanguide.com/table)
-
 ---
 
 ## 评分方法
