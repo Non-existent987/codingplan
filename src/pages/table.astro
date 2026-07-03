@@ -14,21 +14,18 @@ const CAPA_FLOOR = doc.meta.capability_floor || 7.5;
 const USD2CNY = 7.2;
 function cnyPrice(p) { return p.currency === 'usd' ? p.price_monthly * USD2CNY : p.price_monthly; }
 
+function capaPts(p) { const r = p.capability_rank; return r === 1 ? 50 : r === 2 ? 30 : r === 3 ? 20 : 0; }
+function pricePts(p) { const c = cnyPrice(p); return c <= 50 ? 50 : c <= 100 ? 30 : 20; }
+const maxRefill = Math.max(...doc.plans.map(p => p.refill_month ?? 0), 1);
+function quotaPts(p) { return ((p.refill_month ?? 0) / maxRefill) * 50; }
+
 const filtered = doc.plans.filter(p => cnyPrice(p) <= PRICE_CAP && p.capability_score >= CAPA_FLOOR);
-const prices = filtered.map(p => cnyPrice(p));
-const maxP = Math.max(...prices);
-const minP = Math.min(...prices);
-const pSpan = Math.max(1e-9, maxP - minP);
-const quotas = filtered.map(p => p.measured_monthly_tokens_M ?? 0);
-const maxQ = Math.max(...quotas);
-const qSpan = Math.max(1e-9, maxQ);
 
 const scored = filtered
   .map(p => {
-    const priceScore = pSpan < 1e-6 ? 10 : ((maxP - cnyPrice(p)) / pSpan) * 10;
-    const quotaScore = qSpan < 1e-6 ? 10 : ((p.measured_monthly_tokens_M ?? 0) / qSpan) * 10;
-    const total = priceScore * 0.45 + p.capability_score * 0.35 + quotaScore * 0.20;
-    return { ...p, price_score: Number(priceScore.toFixed(2)), quota_score: Number(quotaScore.toFixed(2)), total_score: Number(total.toFixed(2)) };
+    const cp = capaPts(p), pp = pricePts(p), qp = quotaPts(p);
+    const total = cp * 0.40 + pp * 0.30 + qp * 0.30;
+    return { ...p, capa_pts: cp, price_pts: pp, quota_pts: Number(qp.toFixed(2)), total_score: Number(total.toFixed(2)) };
   })
   .sort((a, b) => b.total_score - a.total_score);
 
@@ -38,11 +35,10 @@ const outOfBand = doc.plans
     const reasons = [];
     if (cnyPrice(p) > PRICE_CAP) reasons.push(`超¥${PRICE_CAP}`);
     if (p.capability_score < CAPA_FLOOR) reasons.push(`能力未达`);
-    return { ...p, oob_reason: reasons.join('；'), price_score: 0, quota_score: 0, total_score: 0 };
+    return { ...p, oob_reason: reasons.join('；'), capa_pts: 0, price_pts: 0, quota_pts: 0, total_score: 0 };
   });
 
-// 过线按人工排序，未过线照旧
-const userOrder = ['volcengine-lite', 'glm-lite', 'xunfei-pro', 'opencode-go', 'glm-pro'];
+const userOrder = ['volcengine-lite', 'opencode-go', 'glm-lite', 'xunfei-pro', 'glm-pro'];
 const scoredSorted = userOrder.map(id => scored.find(p => p.id === id)).filter(Boolean);
 for (const s of scored) { if (!scoredSorted.find(p => p.id === s.id)) scoredSorted.push(s); }
 
@@ -50,6 +46,7 @@ const ranked = [...scoredSorted, ...outOfBand];
 
 function fmtTokens(m) { if (!m) return '—'; return m >= 1000 ? `${(m / 1000).toFixed(2)}B` : `${m}M`; }
 function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥${p.price_monthly}`; }
+function fmtRefill(n) { if (!n) return '—'; return n >= 10000 ? `${(n / 10000).toFixed(1)}万` : n.toLocaleString(); }
 ---
 
 <Base path="/table" title="全部套餐 · Coding Plan Guide">
@@ -73,7 +70,7 @@ function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥
             <th data-key="platform">平台 · 套餐</th>
             <th data-key="type">类型</th>
             <th data-key="price_monthly" data-num>月费</th>
-            <th data-key="capability_score" data-num>能力</th>
+            <th data-key="capability_rank" data-num>模型排名</th>
             <th data-key="total_score" data-num>综合分</th>
             <th data-key="verdict">结论</th>
             <th>购买</th>
@@ -86,7 +83,7 @@ function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥
               <td><b><a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'sponsored' : 'nofollow'} style="border:none;color:var(--ink)">{p.platform}</a></b> · <a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'sponsored' : 'nofollow'} style="border:none;color:var(--ink-soft)">{p.plan}</a></td>
               <td>{p.type === 'coding' ? 'Coding' : 'Token'}</td>
               <td class="num">{fmtPrice(p)}</td>
-              <td class="num">{p.capability_score}</td>
+              <td class="num">{p.capability_rank === 1 ? '1st' : p.capability_rank === 2 ? '2nd' : p.capability_rank === 3 ? '3rd' : '—'}</td>
               <td class="num"><b style="color:var(--accent)">{p.total_score || '—'}</b></td>
               <td>
                 <span class="verdict-dot {p.verdict}"></span>{p.verdict}
@@ -132,8 +129,8 @@ function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥
         if (key === 'platform') { av = a.cells[1].textContent; bv = b.cells[1].textContent; return av.localeCompare(bv, 'zh') * sortDir; }
         else if (key === 'verdict') { av = a.cells[6].textContent.trim(); bv = b.cells[6].textContent.trim(); return av.localeCompare(bv, 'zh') * sortDir; }
         else {
-          av = parseFloat(a.cells[key === 'rank' ? 0 : key === 'price_monthly' ? 3 : key === 'capability_score' ? 4 : 5].textContent) || 0;
-          bv = parseFloat(b.cells[key === 'rank' ? 0 : key === 'price_monthly' ? 3 : key === 'capability_score' ? 4 : 5].textContent) || 0;
+          av = parseFloat(a.cells[key === 'rank' ? 0 : key === 'price_monthly' ? 3 : key === 'capability_rank' ? 4 : 5].textContent) || 0;
+          bv = parseFloat(b.cells[key === 'rank' ? 0 : key === 'price_monthly' ? 3 : key === 'capability_rank' ? 4 : 5].textContent) || 0;
           return (av - bv) * sortDir;
         }
       });

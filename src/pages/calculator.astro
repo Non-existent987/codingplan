@@ -18,6 +18,8 @@ const plans = doc.plans.map(p => ({
   measured_monthly_tokens_M: p.measured_monthly_tokens_M ?? null,
   yuan_per_M_token: p.yuan_per_M_token ?? null,
   capability_score: p.capability_score, capability_tier: p.capability_tier,
+  capability_rank: p.capability_rank ?? null,
+  refill_month: p.refill_month ?? null,
   purchase_difficulty: p.purchase_difficulty,
   official_url: p.official_url, affiliate_url: p.affiliate_url,
   note: p.note, verdict: p.verdict
@@ -267,18 +269,17 @@ const USD2CNY = 7.2;
     });
 
     // 在已过滤集合内打综合分
-    const prices = filtered.map(cnyPrice);
-    const maxP = Math.max(...prices), minP = Math.min(...prices);
-    const pSpan = Math.max(1e-9, maxP - minP);
-    const quotas = filtered.map(p => p.measured_monthly_tokens_M ?? 0);
-    const maxQ = Math.max(...quotas);
-    const qSpan = Math.max(1e-9, maxQ);
+    const allRefill = plans.map(p => p.refill_month ?? 0);
+    const maxRefill = Math.max(...allRefill, 1);
+
+    function capaPts(p) { const r = p.capability_rank; return r === 1 ? 50 : r === 2 ? 30 : r === 3 ? 20 : 0; }
+    function pricePts(p) { const c = cnyPrice(p); return c <= 50 ? 50 : c <= 100 ? 30 : 20; }
+    function quotaPts(p) { return ((p.refill_month ?? 0) / maxRefill) * 50; }
 
     const scored = filtered.map(p => {
-      const priceScore = pSpan < 1e-6 ? 10 : ((maxP - cnyPrice(p)) / pSpan) * 10;
-      const quotaScore = qSpan < 1e-6 ? 10 : ((p.measured_monthly_tokens_M ?? 0) / qSpan) * 10;
-      const total = priceScore * 0.45 + p.capability_score * 0.35 + quotaScore * 0.20;
-      return { ...p, total_score: +total.toFixed(2), price_score: +priceScore.toFixed(2), quota_score: +quotaScore.toFixed(2) };
+      const cp = capaPts(p), pp = pricePts(p), qp = quotaPts(p);
+      const total = cp * 0.40 + pp * 0.30 + qp * 0.30;
+      return { ...p, total_score: +total.toFixed(2), capa_pts: cp, price_pts: pp, quota_pts: +qp.toFixed(2) };
     }).sort((a, b) => b.total_score - a.total_score);
 
     render(scored, { budget, region, multimodal, grab, capfloor });
@@ -296,9 +297,9 @@ const USD2CNY = 7.2;
 
     let specs = `
       <div><div class="k">月费</div><div class="v">${fmtPrice(top)}</div></div>
-      <div><div class="k">综合分</div><div class="v"><span class="accent">${top.total_score}</span><span style="color:var(--ink-faint)"> / 10</span></div></div>
+      <div><div class="k">综合分</div><div class="v"><span class="accent">${top.total_score}</span><span style="color:var(--ink-faint)"> / 100</span></div></div>
       <div><div class="k">旗舰模型</div><div class="v" style="font-size:1rem">${top.model_flagship}</div></div>
-      <div><div class="k">月 Token</div><div class="v">${fmtTokens(top.measured_monthly_tokens_M)}</div></div>
+      <div><div class="k">月请求</div><div class="v">${top.refill_month ? (top.refill_month >= 10000 ? (top.refill_month/10000).toFixed(1) + '万' : top.refill_month.toLocaleString()) : '—'}</div></div>
     `;
     let buy = '';
     const url = top.affiliate_url || top.official_url;

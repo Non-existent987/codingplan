@@ -16,6 +16,7 @@
 #   measured_monthly_tokens_M : 实测月可用 Token（百万，可空）
 #   yuan_per_M_token : 每百万 Token 等价人民币（usd 按汇率 ~7.2 折算）
 #   capability_tier  : T0 | T1 | T2（据 AA Agentic Index 粗档）
+#   capability_rank   : 1 | 2 | 3（国内模型排名，1=最强）
 #   capability_score : 0–10（据 AA Agentic Index 归一化）
 #   quota_score      : 0–10（已过滤集合内归一化，用量越多越高）
 #   purchase_difficulty : easy | normal | hard
@@ -32,7 +33,7 @@ meta:
   currency_note: "USD 按 1 USD ≈ 7.2 CNY 折算"
   price_cap: 150
   capability_floor: 7.5
-  scoring: "综合分 = 价格分×0.45 + 能力分×0.35 + 用量分×0.20；价格≤¥150且能力≥国内前3(T0)始入榜"
+  scoring: "综合分 = 能力分×40% + 价格分×30% + 用量分×30%；能力分：国内第1=50、第2=30、第3=20；价格分：≤¥50=50、¥50-100=30、>¥100=20；用量分：月请求数归一化0-50"
   capability_source: "Artificial Analysis Agentic Index 2026-06 公开榜单映射近似"
 
 plans:
@@ -53,6 +54,7 @@ plans:
     measured_monthly_tokens_M: 250
     yuan_per_M_token: 0.16
     capability_tier: T0
+    capability_rank: 1
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: easy
@@ -73,12 +75,13 @@ plans:
     model_flagship: GLM-5.2
     models: [GLM-5.2, GLM-5.1, GLM-5-Turbo, GLM-5]
     multimodal: false
-    refill_5h: 1200
-    refill_week: 6000
-    refill_month: 24000
+    refill_5h: 880
+    refill_week: 2150
+    refill_month: 4300
     measured_monthly_tokens_M: 120
     yuan_per_M_token: 0.41
     capability_tier: T0
+    capability_rank: 1
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: hard
@@ -99,12 +102,13 @@ plans:
     model_flagship: GLM-5.1
     models: [GLM-5.1, Kimi-K2.6, Qwen3.6-35B-A3B, MiniMax-M2.5, DeepSeek-V3.2]
     multimodal: false
-    refill_5h: 1200
-    refill_week: 9000
-    refill_month: 18000
+    refill_5h: 880
+    refill_week: 2150
+    refill_month: 4300
     measured_monthly_tokens_M: 250
     yuan_per_M_token: 0.16
     capability_tier: T0
+    capability_rank: 2
     capability_score: 8.2
     quota_score: null
     purchase_difficulty: easy
@@ -127,16 +131,17 @@ plans:
     multimodal: false
     refill_5h: null
     refill_week: null
-    refill_month: null
+    refill_month: 158150
     measured_monthly_tokens_M: null
     yuan_per_M_token: null
     capability_tier: T0
+    capability_rank: 1
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: easy
     official_url: https://opencode.ai/go
     affiliate_url: https://opencode.ai/go?ref=F3C3Y1MVK0
-    note: 全球旗舰模型随便切，首月半价只要$5，海外直连。性价比国外国产通吃。
+    note: DeepSeek V4 Flash月15万次请求+GLM-5.2旗舰，流畅无中断，首月$5。性价比国外国产通吃。
     verdict: 推荐
     featured: true
     updated: 2026-07-03
@@ -158,6 +163,7 @@ plans:
     measured_monthly_tokens_M: 1249
     yuan_per_M_token: 0.16
     capability_tier: T0
+    capability_rank: 1
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: easy
@@ -184,6 +190,7 @@ plans:
     measured_monthly_tokens_M: 600
     yuan_per_M_token: 0.25
     capability_tier: T0
+    capability_rank: 1
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: hard
@@ -210,6 +217,7 @@ plans:
     measured_monthly_tokens_M: null
     yuan_per_M_token: null
     capability_tier: T0
+    capability_rank: 1
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: easy
@@ -236,6 +244,7 @@ plans:
     measured_monthly_tokens_M: 3000
     yuan_per_M_token: 0.07
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: normal
@@ -262,6 +271,7 @@ plans:
     measured_monthly_tokens_M: 7100
     yuan_per_M_token: 0.07
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: easy
@@ -288,6 +298,7 @@ plans:
     measured_monthly_tokens_M: 1462
     yuan_per_M_token: 0.14
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: easy
@@ -314,6 +325,7 @@ plans:
     measured_monthly_tokens_M: 600
     yuan_per_M_token: 0.86
     capability_tier: T0
+    capability_rank: 1
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: easy
@@ -340,6 +352,7 @@ plans:
     measured_monthly_tokens_M: null
     yuan_per_M_token: 0
     capability_tier: T2
+    capability_rank: null
     capability_score: 6.0
     quota_score: null
     purchase_difficulty: hard
@@ -367,6 +380,7 @@ plans:
     measured_monthly_tokens_M: 500
     yuan_per_M_token: 0.08
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: normal
@@ -393,6 +407,7 @@ plans:
     measured_monthly_tokens_M: 3000
     yuan_per_M_token: 0.07
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: normal
@@ -419,6 +434,7 @@ plans:
     measured_monthly_tokens_M: 12000
     yuan_per_M_token: 0.06
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: normal
@@ -445,6 +461,7 @@ plans:
     measured_monthly_tokens_M: 400
     yuan_per_M_token: 0.10
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: easy
@@ -471,6 +488,7 @@ plans:
     measured_monthly_tokens_M: 2000
     yuan_per_M_token: 0.10
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: easy
@@ -497,6 +515,7 @@ plans:
     measured_monthly_tokens_M: 710
     yuan_per_M_token: 0.07
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: easy
@@ -523,6 +542,7 @@ plans:
     measured_monthly_tokens_M: 2367
     yuan_per_M_token: 0.05
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: easy
@@ -549,6 +569,7 @@ plans:
     measured_monthly_tokens_M: 300
     yuan_per_M_token: 0.13
     capability_tier: T2
+    capability_rank: null
     capability_score: 6.0
     quota_score: null
     purchase_difficulty: normal
@@ -575,6 +596,7 @@ plans:
     measured_monthly_tokens_M: 1500
     yuan_per_M_token: 0.13
     capability_tier: T2
+    capability_rank: null
     capability_score: 6.0
     quota_score: null
     purchase_difficulty: normal
@@ -601,6 +623,7 @@ plans:
     measured_monthly_tokens_M: 300
     yuan_per_M_token: 0.13
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: normal
@@ -627,6 +650,7 @@ plans:
     measured_monthly_tokens_M: 1500
     yuan_per_M_token: 0.13
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: normal
@@ -653,6 +677,7 @@ plans:
     measured_monthly_tokens_M: 300
     yuan_per_M_token: 0.13
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: normal
@@ -679,6 +704,7 @@ plans:
     measured_monthly_tokens_M: 800
     yuan_per_M_token: 0.12
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: normal
@@ -705,6 +731,7 @@ plans:
     measured_monthly_tokens_M: 2500
     yuan_per_M_token: 0.12
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.2
     quota_score: null
     purchase_difficulty: normal
@@ -731,6 +758,7 @@ plans:
     measured_monthly_tokens_M: 200
     yuan_per_M_token: 0.30
     capability_tier: T2
+    capability_rank: null
     capability_score: 5.5
     quota_score: null
     purchase_difficulty: hard
@@ -757,6 +785,7 @@ plans:
     measured_monthly_tokens_M: 600
     yuan_per_M_token: 0.25
     capability_tier: T2
+    capability_rank: null
     capability_score: 5.5
     quota_score: null
     purchase_difficulty: hard
@@ -783,6 +812,7 @@ plans:
     measured_monthly_tokens_M: 250
     yuan_per_M_token: 0.16
     capability_tier: T1
+    capability_rank: 3
     capability_score: 7.0
     quota_score: null
     purchase_difficulty: easy

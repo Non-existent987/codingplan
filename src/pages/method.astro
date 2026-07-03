@@ -20,26 +20,29 @@ const meta = doc.meta;
     <h3 style="margin-top:2.5rem">一、先过两道筛</h3>
     <div class="formula">通过条件：价格 ≤ ¥{meta.price_cap} AND 模型能力 ≥ {meta.capability_floor}（国内前 3 强模型）</div>
     <p>超预算（>¥{meta.price_cap}/月）的一律不入榜——不是它们不好，是大多数人不需要。模型低于国内前三强的也不入——省那十几块用弱模型不值。</p>
-    <p>国内前 3 强模型（T0）参考 <a href="https://artificialanalysis.ai/" target="_blank" rel="noopener">Artificial Analysis Agentic Index</a> 2026-06 榜单映射近似：GLM-5.2、DeepSeek V4 Pro、Kimi K2.7、Qwen-3.7-Max 等（凡额度池可调用的也算）。</p>
+    <p>国内前 3 强模型参考 <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener">Artificial Analysis Intelligence Index</a> v4.1 榜单：GLM-5.2(#7)、DeepSeek V4 Pro(#13)、MiniMax-M3(#12)、Kimi K2.7 Code(#17)、Qwen-3.7-Max(#11)、MiMo-V2.5-Pro(#16) 等。</p>
 
     <h3 style="margin-top:2.5rem">二、过了筛的怎么比</h3>
-    <div class="formula">综合分 = 价格分 × 0.45 + 能力分 × 0.35 + 用量分 × 0.20</div>
-    <p><b>价格分（0–10）</b>：越低越好。过线集合内 min-max 归一化取倒序——最便宜的满分 10，最贵的（刚好卡在 ¥{meta.price_cap}）得 0。这样比"¥37 vs ¥140"拉开差距，弱化"¥37 vs ¥43"微差。</p>
-    <p><b>能力分（0–10）</b>：取旗舰模型的 AA Agentic Index 映射值。过线的都是 T0，差距不大（8.2–8.5），但足够区分"原生直连 vs 额度池共用"和"最新版 vs 上代"。</p>
-    <p><b>用量分（0–10）</b>：月度可用 Token 越多越好。同一集合内归一化，算的是"买了之后到底能扛多少次活儿"。</p>
+    <div class="formula">综合分 = 能力分 × 40% + 价格分 × 30% + 用量分 × 30%（满分 100）</div>
+
+    <p><b>能力分（0 / 30 / 50）</b>：按旗舰模型国内排名阶梯赋分——国内第1强=50分，第2=30分，第3=20分，非T0=0分。占权重最大，因为模型能力直接决定编程体验。</p>
+
+    <p><b>价格分（20 / 30 / 50）</b>：阶梯赋分——月费≤¥50=50分，¥50-100=30分，>¥100=20分。USD 按 7.2 折算。占权重次之，大多数人最关心花多少钱。</p>
+
+    <p><b>用量分（0–50）</b>：月请求数归一化——月请求越多得分越高，最高50分。占权重与价格相同，用量决定"买了之后到底能扛多少活儿"。</p>
 
     <h3 style="margin-top:2.5rem">三、权重怎么来的</h3>
-    <p>价格 0.45 > 能力 0.35 > 用量 0.20。因为：大多数人最关心"花多少钱"，然后才是"模型够不够强"，最后是"能用多少"。权重比例参考了国内开发者的真实投票反馈。</p>
+    <p>能力 40% > 价格 30% = 用量 30%。模型能力是根本——再便宜再能扛，模型不行白搭。价格和用量同等重要——便宜但用完太快，或者量大但贵，都不如均衡。</p>
 
     <h3 style="margin-top:2.5rem">四、过线后的排序怎么来的</h3>
-    <p>公式算完综合分之后，由人工按实测体验微调最终显示顺序——纯数学比分不出"GLM-5.2原生 vs GLM-5.1"和"抢购难度"这种主观差距。过线名单的排名是<b>公式打分 + 实测判断</b>的结果，既是客观的也是负责的。</p>
+    <p>公式算完综合分之后，由人工按实测体验微调最终显示顺序——纯数学比分不出"GLM-5.2原生直连 vs 额度池共用""DeepSeek V4 Flash 月15万次请求的流畅体验"和"抢购难度"这种主观差距。过线名单的排名是<b>公式打分 + 实测判断</b>的结果，既是客观的也是负责的。</p>
 
-    <h3 style="margin-top:2.5rem">四、未过线的还看不看？</h3>
+    <h3 style="margin-top:2.5rem">五、未过线的还看不看？</h3>
     <p>"全部"页面照样列出来，标注了被筛原因（超预算 / 模型不够强）。也许你预算没上限，自己去对比就好。</p>
 
-    <h3 style="margin-top:2.5rem">五、中立声明</h3>
-    <p>部分"去订阅"按钮使用了推荐链接（你买我不亏，你买你不亏）。价格和权益以各平台官方为最终准。每一条数据都手动核过，如果你发现错漏，<a href="https://github.com/Non-existent987/codingplan/issues">提 issue</a> 感谢感谢。</p>
+    <h3 style="margin-top:2.5rem">六、中立声明</h3>
+    <p>数据以各平台官方公布为准。每一条数据都手动核过，如果你发现错漏，欢迎提 issue 反馈。</p>
 
-    <p style="margin-top:3rem;color:var(--ink-faint);font-size:.85rem">数据更新:{meta.updated} · 源码 <a href="https://github.com/Non-existent987/codingplan">github.com/Non-existent987/codingplan</a></p>
+    <p style="margin-top:3rem;color:var(--ink-faint);font-size:.85rem">数据更新:{meta.updated} · 模型排名来源 <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener">Artificial Analysis</a></p>
   </section>
 </Base>

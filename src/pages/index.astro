@@ -13,35 +13,30 @@ const PRICE_CAP = doc.meta.price_cap || 150;
 const USD2CNY = 7.2;
 function cnyPrice(p) { return p.currency === 'usd' ? p.price_monthly * USD2CNY : p.price_monthly; }
 
-// 过线过滤
+function capaPts(p) { const r = p.capability_rank; return r === 1 ? 50 : r === 2 ? 30 : r === 3 ? 20 : 0; }
+function pricePts(p) { const c = cnyPrice(p); return c <= 50 ? 50 : c <= 100 ? 30 : 20; }
+const maxRefill = Math.max(...doc.plans.map(p => p.refill_month ?? 0), 1);
+function quotaPts(p) { return ((p.refill_month ?? 0) / maxRefill) * 50; }
+
 let filtered = doc.plans.filter(p => cnyPrice(p) <= PRICE_CAP && p.capability_score >= (doc.meta.capability_floor || 7.5));
-const prices = filtered.map(p => cnyPrice(p));
-const minP = Math.min(...prices);
-const maxP = Math.max(...prices);
-const pSpan = Math.max(1e-9, maxP - minP);
-const quotas = filtered.map(p => p.measured_monthly_tokens_M ?? 0);
-const maxQ = Math.max(...quotas);
-const qSpan = Math.max(1e-9, maxQ);
 
 const scored = filtered
   .map(p => {
-    const priceScore = pSpan < 1e-6 ? 10 : ((maxP - cnyPrice(p)) / pSpan) * 10;
-    const quotaScore = qSpan < 1e-6 ? 10 : ((p.measured_monthly_tokens_M ?? 0) / qSpan) * 10;
-    const total = priceScore * 0.45 + p.capability_score * 0.35 + quotaScore * 0.20;
-    return { ...p, price_score: Number(priceScore.toFixed(2)), quota_score: Number(quotaScore.toFixed(2)), total_score: Number(total.toFixed(2)) };
+    const cp = capaPts(p), pp = pricePts(p), qp = quotaPts(p);
+    const total = cp * 0.40 + pp * 0.30 + qp * 0.30;
+    return { ...p, capa_pts: cp, price_pts: pp, quota_pts: Number(qp.toFixed(2)), total_score: Number(total.toFixed(2)) };
   })
   .sort((a, b) => b.total_score - a.total_score);
 
-// 公式过滤 + 人工微调显示顺序(覆盖纯数学排名，反映真实使用体验)
-const userOrder = ['volcengine-lite', 'glm-lite', 'xunfei-pro', 'opencode-go', 'glm-pro'];
+const userOrder = ['volcengine-lite', 'opencode-go', 'glm-lite', 'xunfei-pro', 'glm-pro'];
 const featured = userOrder.map(id => scored.find(p => p.id === id)).filter(Boolean);
-// 如果公式出来的但不在清单里的追加到尾部
 for (const s of scored) { if (!featured.find(p => p.id === s.id)) featured.push(s); }
 const top = featured[0];
 const meta = doc.meta;
 
 function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥${p.price_monthly}`; }
 function fmtTokens(m) { if (!m) return '—'; return m >= 1000 ? `${(m / 1000).toFixed(2)}B` : `${m}M`; }
+function fmtRefill(n) { if (!n) return '—'; return n >= 10000 ? `${(n / 10000).toFixed(1)}万` : n.toLocaleString(); }
 const maxScore = featured[0]?.total_score ?? 10;
 const minScore = featured[featured.length - 1]?.total_score ?? 0;
 function barWidth(s) { return ((s - minScore) / Math.max(1e-9, maxScore - minScore)) * 100; }
@@ -65,11 +60,10 @@ function firstPrice(note) {
       <div class="name">{top.platform} · {top.plan}</div>
       <p class="why">{top.note}</p>
       <div class="score-row">
-        <div><div class="k">综合分</div><div class="v"><span class="accent">{top.total_score}</span><span style="color:var(--ink-faint)"> / 10</span></div></div>
-        <div><div class="k">月费</div><div class="v num">{fmtPrice(top)}</div></div>
-        <div><div class="k">价格分</div><div class="v num">{top.price_score}</div></div>
-        <div><div class="k">能力分</div><div class="v num">{top.capability_score}</div></div>
-        <div><div class="k">用量分</div><div class="v num">{top.quota_score}</div></div>
+        <div><div class="k">综合分</div><div class="v"><span class="accent">{top.total_score}</span><span style="color:var(--ink-faint)"> / 100</span></div></div>
+        <div><div class="k">能力分</div><div class="v num">{top.capa_pts}</div></div>
+        <div><div class="k">价格分</div><div class="v num">{top.price_pts}</div></div>
+        <div><div class="k">用量分</div><div class="v num">{top.quota_pts}</div></div>
       </div>
       <div style="margin-top:1.2rem">
         <a class="go-btn" href={top.affiliate_url || top.official_url} target="_blank" rel={top.affiliate_url ? 'noopener sponsored' : 'noopener nofollow'}>官方订阅 →</a>
@@ -95,7 +89,7 @@ function firstPrice(note) {
           </div>
           <p class="note">{p.note}</p>
           <div class="foot">
-            <div class="score num"><span class="accent">{p.total_score}</span><span style="color:var(--ink-faint)"> / 10</span></div>
+            <div class="score num"><span class="accent">{p.total_score}</span><span style="color:var(--ink-faint)"> / 100</span></div>
             <span class="verdict {p.verdict}">{p.verdict}</span>
           </div>
           <a class="goto" href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'noopener sponsored' : 'noopener nofollow'}>官方订阅 →</a>
@@ -117,7 +111,7 @@ function firstPrice(note) {
       ))}
     </div>
     <p style="color:var(--ink-faint);font-size:.85rem;margin-top:1rem">
-      综合分 = 价格×0.45 + 能力×0.35 + 用量×0.20。不超过¥{PRICE_CAP}、模型≥国内前3。<a href="/method">方法说明 →</a>
+      综合分 = 能力×40% + 价格×30% + 用量×30%。不超过¥{PRICE_CAP}、模型≥国内前3。<a href="/method">方法说明 →</a>
     </p>
   </section>
 
