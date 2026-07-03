@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "validate": "node scripts/validate.mjs",
     "gen:readme": "node scripts/gen-readme.mjs",
+    "price-watch": "node scripts/price-watch.mjs --diff",
     "astro": "astro"
   },
   "dependencies": {

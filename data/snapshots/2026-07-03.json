@@ -1,0 +1,113 @@
+{
+  "date": "2026-07-03",
+  "plans": {
+    "volcengine-lite": {
+      "price_monthly": 40,
+      "capability_score": 8.5,
+      "measured_monthly_tokens_M": 250,
+      "refill_5h": 1200,
+      "refill_week": 9000,
+      "refill_month": 18000,
+      "updated": "2026-07-03"
+    },
+    "glm-lite": {
+      "price_monthly": 49,
+      "capability_score": 8.5,
+      "measured_monthly_tokens_M": 120,
+      "refill_5h": 1200,
+      "refill_week": 6000,
+      "refill_month": 24000,
+      "updated": "2026-07-03"
+    },
+    "xunfei-pro": {
+      "price_monthly": 39,
+      "capability_score": 8.2,
+      "measured_monthly_tokens_M": 250,
+      "refill_5h": 1200,
+      "refill_week": 9000,
+      "refill_month": 18000,
+      "updated": "2026-07-03"
+    },
+    "opencode-go": {
+      "price_monthly": 10,
+      "capability_score": 8.5,
+      "measured_monthly_tokens_M": null,
+      "refill_5h": null,
+      "refill_week": null,
+      "refill_month": null,
+      "updated": "2026-07-03"
+    },
+    "volcengine-pro": {
+      "price_monthly": 200,
+      "capability_score": 8.5,
+      "measured_monthly_tokens_M": 1249,
+      "refill_5h": 6000,
+      "refill_week": 45000,
+      "refill_month": 90000,
+      "updated": "2026-07-03"
+    },
+    "glm-pro": {
+      "price_monthly": 149,
+      "capability_score": 8.5,
+      "measured_monthly_tokens_M": 600,
+      "refill_5h": 6000,
+      "refill_week": 30000,
+      "refill_month": 120000,
+      "updated": "2026-07-03"
+    },
+    "xunfei-efficient": {
+      "price_monthly": 199,
+      "capability_score": 8.5,
+      "measured_monthly_tokens_M": null,
+      "refill_5h": 6000,
+      "refill_week": 45000,
+      "refill_month": 90000,
+      "updated": "2026-07-03"
+    },
+    "aliyun-bailian-pro": {
+      "price_monthly": 200,
+      "capability_score": 7,
+      "measured_monthly_tokens_M": 3000,
+      "refill_5h": 6000,
+      "refill_week": 45000,
+      "refill_month": 90000,
+      "updated": "2026-07-03"
+    },
+    "minimax-ultra": {
+      "price_monthly": 469,
+      "capability_score": 7,
+      "measured_monthly_tokens_M": 7100,
+      "refill_5h": 15000,
+      "refill_week": 150000,
+      "refill_month": 600000,
+      "updated": "2026-07-03"
+    },
+    "deepseek-flash-200": {
+      "price_monthly": 200,
+      "capability_score": 7.2,
+      "measured_monthly_tokens_M": 1462,
+      "refill_5h": null,
+      "refill_week": null,
+      "refill_month": null,
+      "updated": "2026-07-03"
+    },
+    "glm-intl-pro": {
+      "price_monthly": 72,
+      "capability_score": 8.5,
+      "measured_monthly_tokens_M": 600,
+      "refill_5h": 6000,
+      "refill_week": 30000,
+      "refill_month": 120000,
+      "updated": "2026-07-03"
+    },
+    "moore-free": {
+      "price_monthly": 1,
+      "capability_score": 6,
+      "measured_monthly_tokens_M": null,
+      "refill_5h": null,
+      "refill_week": null,
+      "refill_month": null,
+      "updated": "2026-07-03"
+    }
+  }
+}

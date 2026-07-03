@@ -1,0 +1,60 @@
+name: Price Watch
+on:
+  schedule:
+    # 每周一 03:00 UTC (北京时间 11:00)
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run price-watch
+        env:
+          PRICE_WATCH_ISSUE: '1'
+        run: |
+          node scripts/price-watch.mjs --diff > diff-output.txt 2>&1
+          cat diff-output.txt
+
+      - name: Commit snapshot (if new)
+        run: |
+          today=$(date -u +%Y-%m-%d)
+          if git status --porcelain data/snapshots | grep -q .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/snapshots/
+            git commit -m "chore(snapshot): ${today} price-watch 快照"
+            git push
+          fi
+
+      - name: Create issue if diff found
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -s diff-output.txt ] && grep -q '发现 [1-9]' diff-output.txt; then
+            today=$(date -u +%Y-%m-%d)
+            body=$(awk '/--- markdown summary ---/{flag=1; next} flag' diff-output.txt)
+            gh issue create \
+              --title "价格/权益变更提醒 ${today}" \
+              --body "${body:-无内容}" \
+              --label "price-watch"
+          else
+            echo "无变化，不发 issue。"
+          fi

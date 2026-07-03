@@ -57,7 +57,7 @@ plans:
     quota_score: null
     purchase_difficulty: easy
     official_url: https://www.volcengine.com/activity/codingplan
-    affiliate_url: null
+    affiliate_url: https://volcengine.com/L/ZggDsb8yNHE/
     note: 四家顶级模型随意切，首月¥9.4，在这买相当于白嫖一个月旗舰。
     verdict: 推荐
     featured: true
@@ -83,7 +83,7 @@ plans:
     quota_score: null
     purchase_difficulty: hard
     official_url: https://bigmodel.cn/glm-coding
-    affiliate_url: null
+    affiliate_url: https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV
     note: GLM-5.2直连，国内代码能力天花板。需抢购，但花¥49用T0旗舰值。
     verdict: 推荐
     featured: true
@@ -108,7 +108,7 @@ plans:
     capability_score: 8.2
     quota_score: null
     purchase_difficulty: easy
-    official_url: https://www.xfyun.cn/
+    official_url: https://maas.xfyun.cn/packageSubscription?tab=month
     affiliate_url: null
     note: 39块没有之一最便宜的T0入口。不用抢，随时开随时用。
     verdict: 推荐
@@ -162,7 +162,7 @@ plans:
     quota_score: null
     purchase_difficulty: easy
     official_url: https://www.volcengine.com/activity/codingplan
-    affiliate_url: null
+    affiliate_url: https://volcengine.com/L/ZggDsb8yNHE/
     note: 重度用户首选，全家桶额度大。超预算但的确最全。
     verdict: 平替
     featured: false
@@ -188,7 +188,7 @@ plans:
     quota_score: null
     purchase_difficulty: hard
     official_url: https://bigmodel.cn/glm-coding
-    affiliate_url: null
+    affiliate_url: https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV
     note: Lite不够用？Pro翻5倍额度，卡在¥150边缘。
     verdict: 平替
     featured: false
@@ -213,7 +213,7 @@ plans:
     capability_score: 8.5
     quota_score: null
     purchase_difficulty: easy
-    official_url: https://www.xfyun.cn/
+    official_url: https://maas.xfyun.cn/packageSubscription?tab=month
     affiliate_url: null
     note: 高效版加GLM-5.2，性价比不错的进阶选择。
     verdict: 平替
@@ -266,7 +266,7 @@ plans:
     quota_score: null
     purchase_difficulty: easy
     official_url: https://platform.minimaxi.com/subscribe/token-plan
-    affiliate_url: null
+    affiliate_url: https://platform.minimaxi.com/subscribe/token-plan?
     note: 多模态+海量额度，4百多值但超预算太多。
     verdict: 谨慎
     featured: false
@@ -295,6 +295,32 @@ plans:
     affiliate_url: null
     note: 按量稳妥，速度稳无额度焦虑，但一次放¥200不如玩月包。
     verdict: 谨慎
+    featured: false
+    updated: 2026-07-03
+
+  - id: glm-intl-pro
+    platform: 智谱国际版
+    plan: Coding Plan Pro
+    price_monthly: 72
+    currency: usd
+    region: global
+    type: coding
+    model_flagship: GLM-5.2
+    models: [GLM-5.2, GLM-5.1, GLM-5-Turbo]
+    multimodal: false
+    refill_5h: 6000
+    refill_week: 30000
+    refill_month: 120000
+    measured_monthly_tokens_M: 600
+    yuan_per_M_token: 0.86
+    capability_tier: T0
+    capability_score: 8.5
+    quota_score: null
+    purchase_difficulty: easy
+    official_url: https://z.ai/subscribe
+    affiliate_url: https://z.ai/subscribe?ic=SUYV1380ZT
+    note: GLM-5.2海外版，无需抢购、稳定支付通道。比国内贵但海外用户友好。
+    verdict: 平替
     featured: false
     updated: 2026-07-03
 

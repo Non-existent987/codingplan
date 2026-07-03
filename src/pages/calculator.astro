@@ -1,0 +1,333 @@
+---
+import Base from '../layouts/Base.astro';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { parse } from 'yaml';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..', '..');
+const doc = parse(readFileSync(join(root, 'data', 'plans.yaml'), 'utf8'));
+
+// 把 plans 序列化给前端
+const plans = doc.plans.map(p => ({
+  id: p.id, platform: p.platform, plan: p.plan,
+  price_monthly: p.price_monthly, currency: p.currency,
+  region: p.region, type: p.type,
+  model_flagship: p.model_flagship, multimodal: p.multimodal,
+  measured_monthly_tokens_M: p.measured_monthly_tokens_M ?? null,
+  yuan_per_M_token: p.yuan_per_M_token ?? null,
+  capability_score: p.capability_score, capability_tier: p.capability_tier,
+  purchase_difficulty: p.purchase_difficulty,
+  official_url: p.official_url, affiliate_url: p.affiliate_url,
+  note: p.note, verdict: p.verdict
+}));
+const PRICE_CAP = doc.meta.price_cap || 150;
+const USD2CNY = 7.2;
+---
+
+<Base path="/calculator" title="选哪个？· Coding Plan Guide" description="输入你的预算和需求，秒给答案。">
+  <section class="wrap" style="padding-top:3rem">
+    <p class="eyebrow"><span class="bar"></span>选哪个？</p>
+    <h2>告诉我你想要啥，我告诉你买哪个。</h2>
+    <p style="color:var(--ink-soft);max-width:52ch;margin-top:1rem">四个问题，一个答案。基于已收录的 {plans.length} 款套餐实时计算。</p>
+
+    <div class="calc-form" id="calc">
+      <div class="calc-row">
+        <label class="calc-label">
+          <span class="k">月预算 <span class="num" id="budgetOut">¥{PRICE_CAP}</span></span>
+          <input id="budget" type="range" min="0" max="500" value={PRICE_CAP} step="10" />
+          <span class="hint"><span class="num">¥0</span><span class="num">¥500</span></span>
+        </label>
+      </div>
+
+      <div class="calc-row">
+        <span class="k">区域</span>
+        <div class="choices">
+          <label><input type="radio" name="region" value="cn" checked /> 国内</label>
+          <label><input type="radio" name="region" value="global" /> 海外</label>
+          <label><input type="radio" name="region" value="any" /> 都行</label>
+        </div>
+      </div>
+
+      <div class="calc-row">
+        <span class="k">要图像/多模态？</span>
+        <div class="choices">
+          <label><input type="radio" name="multimodal" value="no" checked /> 不需要</label>
+          <label><input type="radio" name="multimodal" value="yes" /> 要</label>
+        </div>
+      </div>
+
+      <div class="calc-row">
+        <span class="k">能接受抢购？</span>
+        <div class="choices">
+          <label><input type="radio" name="grab" value="yes" checked /> 能</label>
+          <label><input type="radio" name="grab" value="no" /> 不能，要稳定</label>
+        </div>
+      </div>
+
+      <div class="calc-row">
+        <span class="k">要不要卡能力门槛</span>
+        <div class="choices">
+          <label><input type="radio" name="capfloor" value="yes" checked /> 用最强的（国内前3）</label>
+          <label><input type="radio" name="capfloor" value="no" /> 便宜就好，模型够用就行</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="result" class="result" style="display:none">
+      <div class="result-card">
+        <div class="label">最适合你的</div>
+        <div class="name" id="r-name"></div>
+        <p class="why" id="r-why"></p>
+        <div class="specs" id="r-specs"></div>
+        <div class="specs" id="r-buy"></div>
+      </div>
+      <div class="alts">
+        <p class="k">也算合适，但...</p>
+        <div id="r-alts"></div>
+      </div>
+      <p class="sr-note" id="r-note"></p>
+    </div>
+  </section>
+</Base>
+
+<style is:scoped>
+.calc-form {
+  margin-top: 2.2rem;
+  padding: 1.6rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.calc-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 200px) 1fr;
+  gap: 1rem;
+  padding: .85rem 0;
+  align-items: center;
+}
+.calc-row .k {
+  font-family: var(--sans);
+  color: var(--ink-soft);
+  font-size: .92rem;
+}
+.calc-row .choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.4rem;
+  font-size: .9rem;
+}
+.calc-row .choices label {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  cursor: pointer;
+}
+.calc-row .choices input[type=radio] {
+  accent-color: var(--accent);
+}
+.calc-row input[type=range] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.calc-label .hint {
+  display: flex;
+  justify-content: space-between;
+  font-size: .72rem;
+  color: var(--ink-faint);
+}
+.result {
+  margin-top: 2.5rem;
+}
+.result-card {
+  padding: 2rem 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+.result-card .label {
+  color: var(--ink-faint);
+  font-size: .78rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.result-card .name {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  margin: .4rem 0 .6rem;
+  letter-spacing: -0.01em;
+}
+.result-card .why {
+  color: var(--ink-soft);
+  max-width: 56ch;
+}
+.result-card .specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+}
+.result-card .specs .k {
+  color: var(--ink-faint);
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.result-card .specs .v {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: .2rem;
+}
+.result-card .specs .v .accent {
+  color: var(--accent);
+}
+.alts {
+  margin-top: 2rem;
+  padding-top: 1.4rem;
+}
+.alts .k {
+  color: var(--ink-faint);
+  font-size: .82rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.alt {
+  display: flex;
+  align-items: baseline;
+  gap: .8rem;
+  padding: .6rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+  font-size: .9rem;
+}
+.alt .name {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  min-width: 14ch;
+}
+.alt .why {
+  color: var(--ink-soft);
+  flex: 1;
+}
+.alt .price {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+.sr-note {
+  color: var(--ink-faint);
+  font-size: .82rem;
+  margin-top: 1.5rem;
+}
+.buy-btn {
+  display: inline-block;
+  padding: .55rem 1.2rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: .88rem;
+  border-bottom: 1px solid var(--accent);
+  margin-top: 1rem;
+}
+.buy-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+@media (max-width: 640px) {
+  .calc-row {
+    grid-template-columns: 1fr;
+    gap: .5rem;
+  }
+}
+</style>
+
+<script is:inline define:vars={{ plans, USD2CNY }}>
+  const $ = (s) => document.querySelector(s);
+  const budget = $('#budget');
+  const budgetOut = $('#budgetOut');
+  const result = $('#result');
+
+  function cnyPrice(p) { return p.currency === 'usd' ? p.price_monthly * USD2CNY : p.price_monthly; }
+  function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥${p.price_monthly}`; }
+  function fmtTokens(m) { if (!m) return '—'; return m >= 1000 ? (m/1000).toFixed(2)+'B' : m+'M'; }
+
+  function compute() {
+    const budget = +$('#budget').value;
+    const region = document.querySelector('input[name=region]:checked').value;
+    const multimodal = document.querySelector('input[name=multimodal]:checked').value === 'yes';
+    const grab = document.querySelector('input[name=grab]:checked').value === 'yes';
+    const capfloor = document.querySelector('input[name=capfloor]:checked').value === 'yes';
+
+    // 过滤
+    const filtered = plans.filter(p => {
+      if (cnyPrice(p) > budget) return false;
+      if (region !== 'any' && p.region !== region && p.region !== 'cn') return false;
+      if (region === 'global' && p.region === 'cn') return false;
+      if (multimodal && !p.multimodal) return false;
+      if (!grab && p.purchase_difficulty === 'hard') return false;
+      if (capfloor && p.capability_score < 7.5) return false;
+      return true;
+    });
+
+    // 在已过滤集合内打综合分
+    const prices = filtered.map(cnyPrice);
+    const maxP = Math.max(...prices), minP = Math.min(...prices);
+    const pSpan = Math.max(1e-9, maxP - minP);
+    const quotas = filtered.map(p => p.measured_monthly_tokens_M ?? 0);
+    const maxQ = Math.max(...quotas);
+    const qSpan = Math.max(1e-9, maxQ);
+
+    const scored = filtered.map(p => {
+      const priceScore = pSpan < 1e-6 ? 10 : ((maxP - cnyPrice(p)) / pSpan) * 10;
+      const quotaScore = qSpan < 1e-6 ? 10 : ((p.measured_monthly_tokens_M ?? 0) / qSpan) * 10;
+      const total = priceScore * 0.45 + p.capability_score * 0.35 + quotaScore * 0.20;
+      return { ...p, total_score: +total.toFixed(2), price_score: +priceScore.toFixed(2), quota_score: +quotaScore.toFixed(2) };
+    }).sort((a, b) => b.total_score - a.total_score);
+
+    render(scored, { budget, region, multimodal, grab, capfloor });
+  }
+
+  function render(scored, ctx) {
+    if (scored.length === 0) {
+      result.style.display = 'block';
+      result.innerHTML = '<div class="result-card" style="padding:2rem 0"><div class="name">没找着符合条件的。</div><p class="why">放宽预算、降低模型要求、或允许抢购试试。或者<a href="/table" style="color:var(--accent)">自己看全部</a>。</p></div>';
+      return;
+    }
+
+    const top = scored[0];
+    const alts = scored.slice(1, 4);
+
+    let specs = `
+      <div><div class="k">月费</div><div class="v">${fmtPrice(top)}</div></div>
+      <div><div class="k">综合分</div><div class="v"><span class="accent">${top.total_score}</span><span style="color:var(--ink-faint)"> / 10</span></div></div>
+      <div><div class="k">旗舰模型</div><div class="v" style="font-size:1rem">${top.model_flagship}</div></div>
+      <div><div class="k">月 Token</div><div class="v">${fmtTokens(top.measured_monthly_tokens_M)}</div></div>
+    `;
+    let buy = '';
+    const url = top.affiliate_url || top.official_url;
+    const rel = top.affiliate_url ? 'sponsored' : 'nofollow';
+    const label = top.affiliate_url ? '去订阅（带优惠）→' : '去官方看看 →';
+    buy = `<a class="buy-btn" href="${url}" target="_blank" rel="noopener ${rel}">${label}</a>`;
+
+    let altHtml = alts.map(a => `
+      <div class="alt">
+        <div class="name">${a.platform} · ${a.plan}</div>
+        <div class="why">${a.note}</div>
+        <div class="price num">${fmtPrice(a)} · ${a.total_score}</div>
+      </div>
+    `).join('') || '<p style="color:var(--ink-faint);font-size:.85rem">没有备选了，选上面的就对了。</p>';
+
+    let note = '';
+    if (scored.length === 1) note = '只有这一款完全符合你的条件。';
+    else note = `共 ${scored.length} 款符合条件，下面列出得分前几名。`;
+
+    result.style.display = 'block';
+    $('#r-name').textContent = `${top.platform} · ${top.plan}`;
+    $('#r-why').textContent = top.note;
+    $('#r-specs').innerHTML = specs;
+    $('#r-buy').innerHTML = buy;
+    $('#r-alts').innerHTML = altHtml;
+    $('#r-note').textContent = note;
+  }
+
+  budget.addEventListener('input', () => { budgetOut.textContent = '¥' + budget.value; compute(); });
+  document.querySelectorAll('#calc input').forEach(i => i.addEventListener('change', compute));
+  compute();
+</script>

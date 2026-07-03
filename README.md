@@ -9,6 +9,7 @@
 ## 最值的一单：字节·方舟 · Coding Plan Lite
 
 四家顶级模型随意切，首月¥9.4，在这买相当于白嫖一个月旗舰。 — 综合分 8.27（价格 9.91 + 能力 8.5 + 用量 4.17）。
+[去订阅](https://volcengine.com/L/ZggDsb8yNHE/)
 
 ## 过线排名 Top 5
 
@@ -20,7 +21,7 @@
 | 4 | OpenCode · Go（首月 $5） | $10 | GLM-5.2 | — | 6.13 | 推荐 |
 | 5 | 智谱 AI · Coding Plan Pro | ¥149 | GLM-5.2 | 600M | 4.97 | 平替 |
 
-> 全部套餐（含未过线 6 款）见 [codingplanguide.com/table](https://codingplanguide.com/table)
+> 全部套餐（含未过线 7 款）见 [codingplanguide.com/table](https://codingplanguide.com/table)
 
 ---
 
