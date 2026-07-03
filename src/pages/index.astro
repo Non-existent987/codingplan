@@ -125,4 +125,141 @@ function firstPrice(note) {
     <p style="color:var(--ink-soft)"><b>不确定买哪个？</b> <a href="/calculator">用计算器，4 个问题给一个答案 →</a></p>
     <p style="color:var(--ink-soft);margin-top:.5rem">或者 <a href="/table">直接看 {doc.plans.length - featured.length} 款未过线的全套 →</a></p>
   </section>
+
+  <section class="wrap" style="padding-bottom:2rem">
+    <p class="eyebrow"><span class="bar"></span>模型能力排名</p>
+    <h2>谁最强，一目了然。</h2>
+    <p style="color:var(--ink-soft);max-width:62ch;margin-bottom:1.5rem">
+      数据来自 <a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener">Artificial Analysis</a> Intelligence Index v4.1，综合 9 项独立评测。前 10 名如下，<a href="/rankings">完整 20 名 →</a>
+    </p>
+    <div class="chart-home">
+      {[
+        { rank: 1, name: 'Claude Fable 5', org: 'Anthropic', score: 60 },
+        { rank: 2, name: 'Claude Opus 4.8', org: 'Anthropic', score: 56 },
+        { rank: 3, name: 'GPT-5.5', org: 'OpenAI', score: 55 },
+        { rank: 4, name: 'Claude Opus 4.7', org: 'Anthropic', score: 54 },
+        { rank: 5, name: 'Claude Sonnet 5', org: 'Anthropic', score: 53 },
+        { rank: 6, name: 'GPT-5.5 (high)', org: 'OpenAI', score: 53 },
+        { rank: 7, name: 'GLM-5.2', org: 'Z AI', score: 51 },
+        { rank: 8, name: 'GPT-5.5 (medium)', org: 'OpenAI', score: 50 },
+        { rank: 9, name: 'Gemini 3.5 Flash', org: 'Google', score: 50 },
+        { rank: 10, name: 'Gemini 3.1 Pro', org: 'Google', score: 46 },
+      ].map(m => {
+        const pct = (m.score / 60) * 100;
+        const isCN = ['Z AI', 'Alibaba', 'MiniMax', 'DeepSeek', 'Kimi', 'Xiaomi', 'Nex AGI'].includes(m.org);
+        return (
+          <div class="bar-row">
+            <div class="bar-rank num">{m.rank}</div>
+            <div class="bar-label">
+              <span class="bar-name">{m.name}</span>
+              <span class="bar-org">{m.org}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style={`width:${pct}%`} data-cn={isCN ? '1' : '0'}></div>
+            </div>
+            <div class="bar-score num">{m.score}</div>
+          </div>
+        );
+      })}
+    </div>
+    <div class="legend" style="margin-top:1rem;display:flex;gap:1.5rem;font-size:.82rem;color:var(--ink-soft)">
+      <span><span style="display:inline-block;width:.8rem;height:.8rem;background:var(--accent);border-radius:2px;vertical-align:middle;margin-right:.3rem"></span>国内可订阅</span>
+      <span><span style="display:inline-block;width:.8rem;height:.8rem;background:var(--ink-faint);border-radius:2px;vertical-align:middle;margin-right:.3rem"></span>海外为主</span>
+    </div>
+    <p style="color:var(--ink-faint);font-size:.82rem;margin-top:.8rem">
+      评分截至 2026-07-03 · 来源：<a href="https://artificialanalysis.ai/leaderboards/models" target="_blank" rel="noopener">Artificial Analysis</a>
+    </p>
+  </section>
+
+  <section class="wrap" style="padding-bottom:3rem">
+    <p class="eyebrow"><span class="bar"></span>开源</p>
+    <h2>数据全公开</h2>
+    <p style="color:var(--ink-soft);max-width:56ch">
+      本站全部数据、评分脚本、页面源码均在 GitHub 公开。欢迎监督、纠错、PR。
+    </p>
+    <a class="github-link" href="https://github.com/Non-existent987/codingplan" target="_blank" rel="noopener">
+      GitHub → Non-existent987/codingplan
+    </a>
+  </section>
 </Base>
+
+<style>
+  .chart-home {
+    max-width: 780px;
+  }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr 2fr 3rem;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .35rem;
+  }
+  .bar-rank {
+    text-align: right;
+    font-size: .85rem;
+    color: var(--ink-faint);
+  }
+  .bar-label {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .bar-name {
+    font-size: .88rem;
+    font-weight: 500;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .bar-org {
+    font-size: .72rem;
+    color: var(--ink-faint);
+  }
+  .bar-track {
+    height: 1.4rem;
+    background: var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .6s ease;
+  }
+  .bar-fill[data-cn="1"] {
+    background: var(--accent);
+  }
+  .bar-fill[data-cn="0"] {
+    background: var(--ink-faint);
+  }
+  .bar-score {
+    font-size: .9rem;
+    font-weight: 500;
+    color: var(--accent);
+    text-align: left;
+  }
+  .github-link {
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: var(--mono);
+    font-size: .88rem;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    padding: .5rem 1rem;
+    border-radius: 4px;
+    transition: background .15s;
+  }
+  .github-link:hover {
+    background: var(--accent-soft);
+  }
+  @media (max-width: 640px) {
+    .bar-row {
+      grid-template-columns: 2rem 1fr 1.5fr 2.5rem;
+      gap: .4rem;
+    }
+    .bar-name { font-size: .78rem; }
+    .bar-track { height: 1.1rem; }
+  }
+</style>
