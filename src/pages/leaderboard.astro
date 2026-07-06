@@ -1,0 +1,288 @@
+---
+import Base from '../layouts/Base.astro';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { parse } from 'yaml';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = join(__dirname, '..', '..');
+const doc = parse(readFileSync(join(root, 'data', 'plans.yaml'), 'utf8'));
+
+const PRICE_CAP = doc.meta.price_cap || 150;
+const USD2CNY = 7.2;
+const MAX_REFILL = 200000;
+
+function cnyPrice(p) { return p.currency === 'usd' ? p.price_monthly * USD2CNY : p.price_monthly; }
+function fmtPrice(p) { return p.currency === 'usd' ? `$${p.price_monthly}` : `¥${p.price_monthly}`; }
+
+const PROVIDER_MAP = [
+  ['GLM','Z AI'],['DeepSeek','DeepSeek'],['Kimi','Kimi'],
+  ['MiniMax','MiniMax'],['Qwen','Alibaba'],['MiMo','Xiaomi'],
+  ['Doubao','ByteDance'],['ERNIE','Baidu'],['Hunyuan','Tencent'],['Pangu','Huawei'],
+];
+function modelProviders(models) {
+  if (!models||!models.length) return new Set();
+  const ps = new Set();
+  for (const m of models) { for (const [prefix, name] of PROVIDER_MAP) { if (m.startsWith(prefix)) { ps.add(name); break; } } }
+  return ps;
+}
+
+function capaPts(p) { const r = p.capability_rank; return r === 1 ? 50 : r === 2 ? 25 : r === 3 ? 10 : r === 4 ? 5 : 0; }
+function pricePts(p) { return Math.max(0, Math.min(50, 50 * (1 - cnyPrice(p) / 150))); }
+function quotaPts(p) { return Math.min(50, ((p.refill_month ?? 0) / MAX_REFILL) * 50); }
+function calcBonus(p) {
+  let pts = 0; const n = (p.models||[]).length;
+  if (n >= 8) pts += 4; else if (n >= 6) pts += 3; else if (n >= 4) pts += 2; else if (n >= 2) pts += 1;
+  if (p.purchase_difficulty === 'easy') pts += 2; else if (p.purchase_difficulty === 'normal') pts += 1;
+  if (p.note && /首月/.test(p.note)) pts += 2;
+  const pCount = modelProviders(p.models||[]).size;
+  if (pCount >= 4) pts += 3; else if (pCount >= 3) pts += 2; else if (pCount >= 2) pts += 1;
+  if (p.capability_rank === 1) pts += 3; else if (p.capability_rank === 2) pts += 2; else if (p.capability_rank === 3) pts += 1;
+  if (p.region === 'cn') pts += 1;
+  return Math.min(pts, 20);
+}
+
+function enrich(p) {
+  const cp = capaPts(p), pp = pricePts(p), qp = quotaPts(p);
+  const total = Math.min(100, cp * 0.80 + pp * 0.60 + qp * 0.60 + calcBonus(p));
+  return { ...p, capa_pts: cp, price_pts: Number(pp.toFixed(2)), quota_pts: Number(qp.toFixed(2)), bonus_pts: calcBonus(p), total_score: Number(total.toFixed(2)), cny: cnyPrice(p) };
+}
+
+// Compute various dimension scores for value ranking
+function valueScore(p) {
+  // capability per price: higher = better value
+  const cp = capaPts(p);
+  const c = cnyPrice(p);
+  if (c === 0) return cp * 10;
+  return cp / c * 100;
+}
+
+const allPlans = doc.plans.map(enrich);
+const passed = allPlans.filter(p => p.cny <= PRICE_CAP && [1,2,3,4].includes(p.capability_rank));
+const oob = allPlans.filter(p => !(p.cny <= PRICE_CAP && [1,2,3,4].includes(p.capability_rank)));
+
+const ranks = {
+  overall: {
+    label: '综合排名',
+    desc: '能力×0.80 + 价格×0.60 + 用量×0.60 + 体验加分（上限20）',
+    plans: [...passed].sort((a, b) => b.total_score - a.total_score),
+  },
+  capability: {
+    label: '能力排名',
+    desc: '按旗舰模型国内排名梯级赋分：第1=50，第2=25，第3=10，第4=5',
+    plans: [...allPlans].filter(p => p.capability_rank).sort((a, b) => capaPts(b) - capaPts(a) || a.cny - b.cny),
+  },
+  value: {
+    label: '性价比排名',
+    desc: '能力分 ÷ 价格 × 100，得分越高越划算',
+    plans: [...passed].sort((a, b) => valueScore(b) - valueScore(a) || b.capa_pts - a.capa_pts),
+  },
+  quota: {
+    label: '用量排名',
+    desc: '按月请求数从高到低排列',
+    plans: [...passed].filter(p => p.refill_month).sort((a, b) => (b.refill_month ?? 0) - (a.refill_month ?? 0)),
+  },
+  price: {
+    label: '价格排名',
+    desc: '从低到高排列（过线套餐）',
+    plans: [...passed].sort((a, b) => a.cny - b.cny || b.total_score - a.total_score),
+  },
+  experience: {
+    label: '体验排名',
+    desc: '体验加分从高到低：模型池、购买难度、首月优惠、厂商多样性、地区友好',
+    plans: [...passed].sort((a, b) => b.bonus_pts - a.bonus_pts || b.total_score - a.total_score),
+  },
+};
+
+const dimKeys = Object.keys(ranks);
+const meta = doc.meta;
+---
+
+<Base path="/leaderboard" title="多维排名 · Coding Plan Guide">
+  <section class="wrap" style="padding-top:3rem">
+    <p class="eyebrow"><span class="bar"></span>多维排名</p>
+    <h2>换个角度看，谁更值？</h2>
+    <p style="color:var(--ink-soft);max-width:56ch;margin-bottom:2rem">
+      综合排名不是唯一标准。能力、性价比、用量、价格、体验——每个维度都有自己的第一名。
+      参考 <a href="https://arena.ai/leaderboard/agent" target="_blank" rel="noopener">arena.ai Agent Leaderboard</a> 的多信号排名方法，每个维度独立排序。
+    </p>
+
+    <div class="tabs" id="dim-tabs">
+      {dimKeys.map((key, i) => {
+        const r = ranks[key];
+        return (
+          <button class="tab" data-dim={key} data-active={i === 0 ? 'true' : 'false'}>
+            <span class="tab-label">{r.label}</span>
+            <span class="tab-desc">{r.desc}</span>
+          </button>
+        );
+      })}
+    </div>
+
+    {dimKeys.map((key, i) => {
+      const r = ranks[key];
+      const top3 = r.plans.slice(0, 3);
+      const maxVal = key === 'overall' ? 100
+        : key === 'capability' ? 50
+        : key === 'value' ? Math.max(...r.plans.map(p => valueScore(p)))
+        : key === 'quota' ? Math.max(...r.plans.map(p => p.refill_month ?? 0))
+        : key === 'price' ? Math.max(...r.plans.map(p => PRICE_CAP - p.cny))
+        : key === 'experience' ? 20
+        : 100;
+      return (
+        <div class="dim-panel" data-dim={key} data-active={i === 0 ? 'true' : 'false'}>
+          <div class="podium">
+            {top3.map((p, pi) => {
+              const medal = pi === 0 ? '🥇' : pi === 1 ? '🥈' : '🥉';
+              return (
+                <div class={`podium-item rank-${pi + 1}`}>
+                  <div class="medal">{medal}</div>
+                  <div class="p-name">{p.platform} · {p.plan}</div>
+                  <div class="p-score">
+                    {key === 'overall' ? `${p.total_score}/100`
+                      : key === 'capability' ? `${p.capa_pts}/50`
+                      : key === 'value' ? valueScore(p).toFixed(1)
+                      : key === 'quota' ? `${(p.refill_month / 10000).toFixed(1)}万`
+                      : key === 'price' ? fmtPrice(p)
+                      : key === 'experience' ? `+${p.bonus_pts}`
+                      : ''}
+                  </div>
+                  <div class="p-meta">{p.note}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style="overflow-x:auto;margin-top:2rem">
+            <table class="thin-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>平台 · 套餐</th>
+                  <th>月费</th>
+                  <th>旗舰模型</th>
+                  {key === 'overall' && <th data-num>综合分</th>}
+                  {key === 'capability' && <th data-num>能力分</th>}
+                  {key === 'value' && <th data-num>性价比分</th>}
+                  {key === 'quota' && <th data-num>月请求</th>}
+                  {key === 'price' && <th data-num>价格分</th>}
+                  {key === 'experience' && <th data-num>体验分</th>}
+                  <th>结论</th>
+                  <th>购买</th>
+                </tr>
+              </thead>
+              <tbody>
+                {r.plans.map((p, pi) => (
+                  <tr>
+                    <td class="num">{pi + 1}</td>
+                    <td><b><a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'sponsored' : 'nofollow'} style="border:none;color:var(--ink)">{p.platform}</a></b> · <a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'sponsored' : 'nofollow'} style="border:none;color:var(--ink-soft)">{p.plan}</a></td>
+                    <td class="num">{fmtPrice(p)}</td>
+                    <td>{p.model_flagship}</td>
+                    {key === 'overall' && <td class="num"><b style="color:var(--accent)">{p.total_score}</b></td>}
+                    {key === 'capability' && <td class="num"><b style="color:var(--accent)">{p.capa_pts}</b></td>}
+                    {key === 'value' && <td class="num"><b style="color:var(--accent)">{valueScore(p).toFixed(1)}</b></td>}
+                    {key === 'quota' && <td class="num"><b style="color:var(--accent)">{p.refill_month >= 10000 ? (p.refill_month/10000).toFixed(1)+'万' : p.refill_month?.toLocaleString() || '—'}</b></td>}
+                    {key === 'price' && <td class="num"><b style="color:var(--accent)">{p.price_pts}</b></td>}
+                    {key === 'experience' && <td class="num"><b style="color:var(--accent)">+{p.bonus_pts}</b></td>}
+                    <td>
+                      <span class="verdict-dot {p.verdict}"></span>{p.verdict}
+                    </td>
+                    <td>
+                      <a href={p.affiliate_url || p.official_url} target="_blank" rel={p.affiliate_url ? 'sponsored' : 'nofollow'} style="font-size:.78rem;border:1px solid var(--accent);color:var(--accent);padding:.1rem .4rem;text-decoration:none">官方订阅</a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    })}
+
+    <p style="color:var(--ink-faint);font-size:.82rem;margin-top:1.5rem">
+      过线条件：价格≤¥{PRICE_CAP} AND 模型排名国内前4。未过线套餐不参与排名。
+      评分公式见 <a href="/method">方法说明</a>。数据更新：{meta.updated}
+    </p>
+  </section>
+</Base>
+
+<style is:global>
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 0;
+  }
+  .tab {
+    flex: 1;
+    min-width: 130px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: .8rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--sans);
+    transition: border-color .15s, color .15s;
+    color: var(--ink-faint);
+  }
+  .tab:hover { color: var(--ink); border-bottom-color: var(--rule); }
+  .tab[data-active="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+  .tab-label {
+    display: block;
+    font-size: .9rem;
+    font-weight: 500;
+  }
+  .tab-desc {
+    display: block;
+    font-size: .72rem;
+    margin-top: .15rem;
+    color: var(--ink-faint);
+  }
+  .dim-panel { display: none; }
+  .dim-panel[data-active="true"] { display: block; }
+
+  .podium {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .podium-item {
+    padding: 1.5rem 1.2rem;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    text-align: center;
+  }
+  .podium-item.rank-1 {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .medal { font-size: 1.8rem; margin-bottom: .4rem; }
+  .p-name { font-family: var(--serif); font-size: 1rem; font-weight: 500; }
+  .p-score { font-size: 1.4rem; font-family: var(--serif); color: var(--accent); margin: .4rem 0; }
+  .p-meta { font-size: .78rem; color: var(--ink-soft); }
+
+  @media (max-width: 640px) {
+    .tabs { flex-direction: column; }
+    .podium { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script is:inline>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const dim = tab.dataset.dim;
+      document.querySelectorAll('.tab').forEach(t => t.dataset.active = 'false');
+      document.querySelectorAll('.dim-panel').forEach(p => p.dataset.active = 'false');
+      tab.dataset.active = 'true';
+      document.querySelector(`.dim-panel[data-dim="${dim}"]`).dataset.active = 'true';
+    });
+  });
+</script>

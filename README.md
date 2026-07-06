@@ -82,6 +82,58 @@ OpenCode Go 包含 7 大模型，各模型独立请求配额如下：
 
 ---
 
+## 多维排名
+
+参考 [arena.ai Agent Leaderboard](https://arena.ai/leaderboard/agent) 的多信号排名方法，每个维度独立排序。
+
+### 综合排名 TOP 6
+
+| # | 平台 · 套餐 | 月费 | 综合分 | 能力分 | 价格分 | 用量分 | 体验加分 |
+|---|---|---|---|---|---|---|---|
+| 1 | [字节·方舟 · Coding Plan Lite](https://volcengine.com/L/ZggDsb8yNHE/) | ¥40 | 79.7 | 50 | 36.67 | 4.5 | +15 |
+| 2 | [OpenCode · Go（首月 $5）](https://opencode.ai/go?ref=F3C3Y1MVK0) | $10 | 70.25 | 50 | 26 | 1.07 | +14 |
+| 3 | [智谱 AI · Coding Plan Lite](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥49 | 66.84 | 50 | 33.67 | 1.07 | +6 |
+| 4 | [智谱 AI · Coding Plan Pro](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥149 | 64.2 | 50 | 0.33 | 30 | +6 |
+| 5 | [MiniMax · 新 Max](https://platform.minimaxi.com/subscribe/token-plan) | ¥119 | 49.2 | 10 | 10.33 | 50 | +5 |
+| 6 | [MiniMax · 新 Plus](https://platform.minimaxi.com/subscribe/token-plan) | ¥49 | 42.2 | 10 | 33.67 | 15 | +5 |
+
+### 能力排名 TOP 6
+
+| # | 平台 · 套餐 | 月费 | 旗舰模型 | 能力分 |
+|---|---|---|---|---|
+| 1 | [智谱 AI · Coding Plan Pro](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥149 | GLM-5.2 | 50 |
+| 2 | [智谱 AI · Coding Plan Lite](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥49 | GLM-5.2 | 50 |
+| 3 | [OpenCode · Go（首月 $5）](https://opencode.ai/go?ref=F3C3Y1MVK0) | $10 | GLM-5.2 | 50 |
+| 4 | [字节·方舟 · Coding Plan Lite](https://volcengine.com/L/ZggDsb8yNHE/) | ¥40 | GLM-5.2（额度池共用） | 50 |
+| 5 | [MiniMax · 新 Plus](https://platform.minimaxi.com/subscribe/token-plan) | ¥49 | MiniMax-M3 | 10 |
+| 6 | [MiniMax · 新 Max](https://platform.minimaxi.com/subscribe/token-plan) | ¥119 | MiniMax-M3 | 10 |
+
+### 性价比排名 TOP 6
+
+| # | 平台 · 套餐 | 月费 | 性价比分 | 能力分 | 价格分 |
+|---|---|---|---|---|---|
+| 1 | [字节·方舟 · Coding Plan Lite](https://volcengine.com/L/ZggDsb8yNHE/) | ¥40 | 125.0 | 50 | 36.67 |
+| 2 | [智谱 AI · Coding Plan Lite](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥49 | 102.0 | 50 | 33.67 |
+| 3 | [OpenCode · Go（首月 $5）](https://opencode.ai/go?ref=F3C3Y1MVK0) | $10 | 69.4 | 50 | 26 |
+| 4 | [智谱 AI · Coding Plan Pro](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥149 | 33.6 | 50 | 0.33 |
+| 5 | [MiniMax · 新 Plus](https://platform.minimaxi.com/subscribe/token-plan) | ¥49 | 20.4 | 10 | 33.67 |
+| 6 | [MiniMax · 新 Max](https://platform.minimaxi.com/subscribe/token-plan) | ¥119 | 8.4 | 10 | 10.33 |
+
+### 体验排名 TOP 6
+
+| # | 平台 · 套餐 | 月费 | 体验加分 | 模型数 | 难度 | 首月优惠 |
+|---|---|---|---|---|---|---|
+| 1 | [字节·方舟 · Coding Plan Lite](https://volcengine.com/L/ZggDsb8yNHE/) | ¥40 | +15 | 8 | 简单 | 是 |
+| 2 | [OpenCode · Go（首月 $5）](https://opencode.ai/go?ref=F3C3Y1MVK0) | $10 | +14 | 7 | 简单 | 是 |
+| 3 | [智谱 AI · Coding Plan Lite](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥49 | +6 | 4 | 困难 | 否 |
+| 4 | [智谱 AI · Coding Plan Pro](https://www.bigmodel.cn/glm-coding?ic=QLFXUYQFFV) | ¥149 | +6 | 4 | 困难 | 否 |
+| 5 | [MiniMax · 新 Max](https://platform.minimaxi.com/subscribe/token-plan) | ¥119 | +5 | 3 | 简单 | 否 |
+| 6 | [MiniMax · 新 Plus](https://platform.minimaxi.com/subscribe/token-plan) | ¥49 | +5 | 3 | 简单 | 否 |
+
+> 完整多维排名见 [codingplanguide.com/leaderboard](https://codingplanguide.com/leaderboard)
+
+---
+
 ## 评分方法
 
 综合分 = 能力分×0.80 + 价格分×0.60 + 用量分×0.60 + 体验加分（满分100，加分上限20）。能力分梯队：国内第1=50、第2=25、第3=10、第4=5。价格分线性：50×(1−价格/¥150)。用量分线性：(月请求/200000)×50。体验加分：基于模型池大小、购买难度、首月优惠、厂商多样性等，上限20分。详见 [/method](https://codingplanguide.com/method)。

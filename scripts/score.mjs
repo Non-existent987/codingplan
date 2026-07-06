@@ -11,6 +11,10 @@ const PRICE_CAP = doc.meta.price_cap || 150;
 const USD2CNY = 7.2;
 const MAX_REFILL = 200000;
 
+function fmtPrice(p) {
+  return p.currency === 'usd' ? `$${p.price_monthly}` : `¥${p.price_monthly}`;
+}
+
 function cnyPrice(p) {
   return p.currency === 'usd' ? p.price_monthly * USD2CNY : p.price_monthly;
 }
@@ -114,7 +118,7 @@ const outOfBand = doc.plans
 const ranked = [...scored, ...outOfBand];
 const featured = scored.slice(0, 6);
 
-export { doc, ranked, featured, filtered, scored, USD2CNY, PRICE_CAP, MAX_REFILL };
+export { doc, ranked, featured, filtered, scored, USD2CNY, PRICE_CAP, MAX_REFILL, cnyPrice, fmtPrice };
 
 if (process.argv[1] && process.argv[1].endsWith('score.mjs')) {
   console.log('═══ 过线名单（价格≤¥150，模型国内前4）═══');

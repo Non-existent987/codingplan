@@ -1,16 +1,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { doc, scored } from './score.mjs';
+import { doc, scored, fmtPrice, cnyPrice } from './score.mjs';
 
 const featured = scored.slice(0, 6);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
-
-function fmtPrice(p) {
-  return p.currency === 'usd' ? `$${p.price_monthly}` : `¥${p.price_monthly}`;
-}
 function fmtRefill(n) {
   if (!n) return '—';
   if (n >= 10000) return `${(n / 10000).toFixed(1)}万`;
@@ -120,6 +116,53 @@ top25.forEach((m, i) => {
 });
 lines.push('');
 lines.push('> 来源：[Artificial Analysis](https://artificialanalysis.ai/leaderboards/models) Intelligence Index v4.1');
+lines.push('');
+lines.push('---');
+lines.push('');
+lines.push('## 多维排名');
+lines.push('');
+lines.push('参考 [arena.ai Agent Leaderboard](https://arena.ai/leaderboard/agent) 的多信号排名方法，每个维度独立排序。');
+lines.push('');
+lines.push('### 综合排名 TOP 6');
+lines.push('');
+lines.push('| # | 平台 · 套餐 | 月费 | 综合分 | 能力分 | 价格分 | 用量分 | 体验加分 |');
+lines.push('|---|---|---|---|---|---|---|---|');
+lines.push(...scored.slice(0, 6).map((p, i) =>
+  `| ${i+1} | [${p.platform} · ${p.plan}](${p.affiliate_url || p.official_url}) | ${fmtPrice(p)} | ${p.total_score} | ${p.capa_pts} | ${p.price_pts} | ${p.quota_pts} | ${p.bonus_pts > 0 ? '+'+p.bonus_pts : '—'} |`
+));
+lines.push('');
+lines.push('### 能力排名 TOP 6');
+lines.push('');
+lines.push('| # | 平台 · 套餐 | 月费 | 旗舰模型 | 能力分 |');
+lines.push('|---|---|---|---|---|');
+const capSorted = [...scored].sort((a, b) => b.capa_pts - a.capa_pts || a.total_score - b.total_score);
+lines.push(...capSorted.slice(0, 6).map((p, i) =>
+  `| ${i+1} | [${p.platform} · ${p.plan}](${p.affiliate_url || p.official_url}) | ${fmtPrice(p)} | ${p.model_flagship} | ${p.capa_pts} |`
+));
+lines.push('');
+lines.push('### 性价比排名 TOP 6');
+lines.push('');
+lines.push('| # | 平台 · 套餐 | 月费 | 性价比分 | 能力分 | 价格分 |');
+lines.push('|---|---|---|---|---|---|');
+const valSorted = [...scored].sort((a, b) => {
+  const va = b.capa_pts / cnyPrice(b) * 100; const vb = a.capa_pts / cnyPrice(a) * 100;
+  return va - vb;
+});
+lines.push(...valSorted.slice(0, 6).map((p, i) => {
+  const vs = (p.capa_pts / cnyPrice(p) * 100).toFixed(1);
+  return `| ${i+1} | [${p.platform} · ${p.plan}](${p.affiliate_url || p.official_url}) | ${fmtPrice(p)} | ${vs} | ${p.capa_pts} | ${p.price_pts} |`;
+}));
+lines.push('');
+lines.push('### 体验排名 TOP 6');
+lines.push('');
+lines.push('| # | 平台 · 套餐 | 月费 | 体验加分 | 模型数 | 难度 | 首月优惠 |');
+lines.push('|---|---|---|---|---|---|---|');
+const expSorted = [...scored].sort((a, b) => b.bonus_pts - a.bonus_pts);
+lines.push(...expSorted.slice(0, 6).map((p, i) =>
+  `| ${i+1} | [${p.platform} · ${p.plan}](${p.affiliate_url || p.official_url}) | ${fmtPrice(p)} | +${p.bonus_pts} | ${(p.models||[]).length} | ${p.purchase_difficulty === 'easy' ? '简单' : p.purchase_difficulty === 'normal' ? '一般' : '困难'} | ${p.note?.includes('首月') ? '是' : '否'} |`
+));
+lines.push('');
+lines.push(`> 完整多维排名见 [codingplanguide.com/leaderboard](https://codingplanguide.com/leaderboard)`);
 lines.push('');
 lines.push('---');
 lines.push('');
