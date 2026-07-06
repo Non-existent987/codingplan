@@ -22,7 +22,7 @@
 | 5 | [MiniMax · 新 Max](https://platform.minimaxi.com/subscribe/token-plan) | ¥119 | MiniMax-M3 | 国内第3 | 20.0万 | 49.2 | +5 | 平替 |
 | 6 | [MiniMax · 新 Plus](https://platform.minimaxi.com/subscribe/token-plan) | ¥49 | MiniMax-M3 | 国内第3 | 6.0万 | 42.2 | +5 | 平替 |
 
-> 未过线套餐（23 款）见 [data/plans.yaml](https://github.com/Non-existent987/codingplan/blob/main/data/plans.yaml) 或 [codingplanguide.com/table](https://codingplanguide.com/table)
+> 未过线套餐（23 款）见 [data/plans.yaml](https://github.com/Non-existent987/codingplanguide/blob/main/data/plans.yaml) 或 [codingplanguide.com/table](https://codingplanguide.com/table)
 
 ---
 

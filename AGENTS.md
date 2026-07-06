@@ -89,6 +89,6 @@ git push
 - README.md 由 `npm run gen:readme` 自动生成，不要直接手改
 - 零 emoji 零徽章的设计原则
 - CI 部署的 Node 版本是 20（`actions/setup-node@v4 with node-version: '20'`）
-- GitHub 仓库：`github.com/Non-existent987/codingplan`
+- GitHub 仓库：`github.com/Non-existent987/codingplanguide`
 - 所有购买按钮统一显示"官方订阅"，不标返利标签
 - 页脚备案占位"备案中"，备案通过后替换
